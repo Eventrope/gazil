@@ -15,7 +15,7 @@ func _ready() -> void:
 func _update_header() -> void:
 	var player := GameState.player
 	credits_label.text = "Credits: %s" % _format_number(player.credits)
-	cargo_label.text = "Cargo: %d/%d" % [player.get_cargo_space_used(), player.ship.cargo_capacity]
+	cargo_label.text = "Cargo: %d/%d t" % [player.get_cargo_space_used(), player.ship.cargo_tonnes]
 
 func _format_number(num: int) -> String:
 	var str_num := str(num)

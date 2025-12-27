@@ -80,8 +80,8 @@ func _update_hud() -> void:
 	var current := DataRepo.get_planet(player.current_planet)
 
 	credits_label.text = "Credits: %s" % _format_number(player.credits)
-	fuel_label.text = "Fuel: %d/%d" % [player.fuel, player.ship.fuel_capacity]
-	cargo_label.text = "Cargo: %d/%d" % [player.get_cargo_space_used(), player.ship.cargo_capacity]
+	fuel_label.text = "Fuel: %d/%d" % [player.fuel, player.ship.fuel_tank]
+	cargo_label.text = "Cargo: %d/%d t" % [player.get_cargo_space_used(), player.ship.cargo_tonnes]
 	day_label.text = "Day: %d" % player.day
 	location_label.text = "Location: %s" % current.planet_name
 

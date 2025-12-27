@@ -43,7 +43,7 @@ func get_cargo_space_used() -> int:
 func get_cargo_space_free() -> int:
 	if ship == null:
 		return 0
-	return ship.cargo_capacity - get_cargo_space_used()
+	return ship.cargo_tonnes - get_cargo_space_used()
 
 func add_cargo(commodity_id: String, quantity: int) -> void:
 	if cargo.has(commodity_id):
@@ -89,7 +89,7 @@ func use_fuel(amount: int) -> bool:
 
 func add_fuel(amount: int) -> void:
 	if ship:
-		fuel = min(fuel + amount, ship.fuel_capacity)
+		fuel = min(fuel + amount, ship.fuel_tank)
 	else:
 		fuel += amount
 	fuel_changed.emit(fuel)

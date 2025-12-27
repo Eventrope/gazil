@@ -8,6 +8,7 @@ var events: Array[GameEvent] = []
 var news_event_templates: Array = []  # Raw template data for news events
 var upgrades: Dictionary = {}  # {id: Dictionary}
 var ships: Dictionary = {}  # {id: Dictionary}
+var ship_traits: Dictionary = {}  # {id: Dictionary}
 
 var _loaded := false
 
@@ -21,9 +22,11 @@ func _load_all_data() -> void:
 	_load_news_events()
 	_load_upgrades()
 	_load_ships()
+	_load_ship_traits()
 	_loaded = true
-	print("DataRepo: Loaded %d planets, %d commodities, %d events, %d news events, %d upgrades" % [
-		planets.size(), commodities.size(), events.size(), news_event_templates.size(), upgrades.size()
+	print("DataRepo: Loaded %d planets, %d commodities, %d events, %d news events, %d upgrades, %d ships, %d traits" % [
+		planets.size(), commodities.size(), events.size(), news_event_templates.size(),
+		upgrades.size(), ships.size(), ship_traits.size()
 	])
 
 func _load_json(path: String) -> Variant:
@@ -87,6 +90,13 @@ func _load_ships() -> void:
 	for ship_data in data["ships"]:
 		ships[ship_data["id"]] = ship_data
 
+func _load_ship_traits() -> void:
+	var data = _load_json("res://data/ship_traits.json")
+	if data == null or not data.has("ship_traits"):
+		return
+	for trait_data in data["ship_traits"]:
+		ship_traits[trait_data["id"]] = trait_data
+
 # --- Public API ---
 
 func get_planet(id: String) -> Planet:
@@ -141,15 +151,28 @@ func get_available_upgrades(player: Player) -> Array:
 func get_ship_template(id: String) -> Dictionary:
 	return ships.get(id, {})
 
-func get_starting_ship() -> Ship:
-	var ship_data: Dictionary = ships.get("rustbucket", {
-		"id": "rustbucket",
-		"name": "Rustbucket Mk1",
-		"cargo_capacity": 100,
-		"fuel_capacity": 50,
-		"fuel_efficiency": 1.0
-	})
-	return Ship.new(ship_data)
+func get_all_ships() -> Array:
+	return ships.values()
+
+func get_all_ship_ids() -> Array:
+	return ships.keys()
+
+func get_starter_ships() -> Array[Ship]:
+	var starters: Array[Ship] = []
+	for ship_data in ships.values():
+		if ship_data.get("is_starter", false):
+			starters.append(Ship.new(ship_data))
+	return starters
+
+func create_ship(ship_id: String) -> Ship:
+	var template: Dictionary = ships.get(ship_id, {})
+	if template.is_empty():
+		push_error("DataRepo: Unknown ship id: " + ship_id)
+		return null
+	return Ship.new(template)
+
+func get_ship_trait(trait_id: String) -> Dictionary:
+	return ship_traits.get(trait_id, {})
 
 func get_commodity_weight(commodity_id: String) -> int:
 	var commodity := get_commodity(commodity_id)

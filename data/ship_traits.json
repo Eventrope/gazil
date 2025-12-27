@@ -1,0 +1,36 @@
+{
+  "ship_traits": [
+    {
+      "id": "cheap_repairs",
+      "name": "Cheap Repairs",
+      "description": "Repair costs reduced by 30%",
+      "effects": {
+        "repair_cost_modifier": 0.7
+      }
+    },
+    {
+      "id": "tips",
+      "name": "Passenger Tips",
+      "description": "Earn extra credits from passenger fares",
+      "effects": {
+        "passenger_tip_bonus": 0.15
+      }
+    },
+    {
+      "id": "fast_loading",
+      "name": "Fast Loading",
+      "description": "Cargo operations take less time at port",
+      "effects": {
+        "loading_time_modifier": 0.5
+      }
+    },
+    {
+      "id": "low_profile",
+      "name": "Low Profile",
+      "description": "Reduced chance of pirate encounters",
+      "effects": {
+        "pirate_encounter_modifier": 0.5
+      }
+    }
+  ]
+}

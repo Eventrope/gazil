@@ -7,8 +7,8 @@ func _ready() -> void:
 	load_game_button.disabled = not GameState.has_save_game()
 
 func _on_new_game_pressed() -> void:
-	GameState.new_game()
-	get_tree().change_scene_to_file("res://scenes/galaxy_map.tscn")
+	GameState.start_new_game()
+	get_tree().change_scene_to_file("res://scenes/ship_selection.tscn")
 
 func _on_load_game_pressed() -> void:
 	if GameState.load_game():

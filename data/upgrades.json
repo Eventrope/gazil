@@ -3,40 +3,40 @@
     {
       "id": "cargo_expansion_1",
       "name": "Cargo Bay Expansion I",
-      "description": "Install additional cargo racks. +50 cargo capacity.",
+      "description": "Install additional cargo racks. +5 tonnes capacity.",
       "cost": 3000,
       "effects": {
-        "cargo_capacity": 50
+        "cargo_tonnes": 5
       },
       "requires": []
     },
     {
       "id": "cargo_expansion_2",
       "name": "Cargo Bay Expansion II",
-      "description": "Major cargo hold overhaul. +100 cargo capacity.",
+      "description": "Major cargo hold overhaul. +10 tonnes capacity.",
       "cost": 8000,
       "effects": {
-        "cargo_capacity": 100
+        "cargo_tonnes": 10
       },
       "requires": ["cargo_expansion_1"]
     },
     {
       "id": "fuel_tank_1",
       "name": "Extended Fuel Tank",
-      "description": "Larger fuel reserves for longer journeys. +30 fuel capacity.",
+      "description": "Larger fuel reserves for longer journeys. +15 fuel capacity.",
       "cost": 2500,
       "effects": {
-        "fuel_capacity": 30
+        "fuel_tank": 15
       },
       "requires": []
     },
     {
       "id": "fuel_tank_2",
       "name": "Deep Space Fuel Tank",
-      "description": "Massive fuel storage for distant voyages. +50 fuel capacity.",
+      "description": "Massive fuel storage for distant voyages. +25 fuel capacity.",
       "cost": 6000,
       "effects": {
-        "fuel_capacity": 50
+        "fuel_tank": 25
       },
       "requires": ["fuel_tank_1"]
     },
@@ -46,7 +46,7 @@
       "description": "Modern engine uses 20% less fuel per trip.",
       "cost": 10000,
       "effects": {
-        "fuel_efficiency": 0.8
+        "fuel_burn_modifier": 0.8
       },
       "requires": []
     }

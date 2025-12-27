@@ -1,0 +1,138 @@
+[gd_scene load_steps=2 format=3 uid="uid://ship_selection"]
+
+[ext_resource type="Script" path="res://scripts/ship_selection.gd" id="1_shipsel"]
+
+[node name="ShipSelection" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_shipsel")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.08, 0.12, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "Choose Your Ship"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ContentContainer" type="HSplitContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 280
+
+[node name="ShipListPanel" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ShipListLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipListPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Available Ships"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipListPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ShipButtonContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipListPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="ShipDetailsPanel" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 15
+
+[node name="ShipNameLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDetailsPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Select a Ship"
+
+[node name="ShipDescriptionLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDetailsPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+text = "Click on a ship to see its details."
+autowrap_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDetailsPanel"]
+layout_mode = 2
+
+[node name="StatsGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDetailsPanel"]
+layout_mode = 2
+columns = 2
+
+[node name="TraitContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDetailsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="TraitNameLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDetailsPanel/TraitContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.4, 0.8, 0.4, 1)
+text = ""
+
+[node name="TraitDescLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDetailsPanel/TraitContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = ""
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDetailsPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HSeparator3" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Footer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/Footer"]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Back"
+
+[node name="SelectButton" type="Button" parent="MarginContainer/VBoxContainer/Footer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+disabled = true
+text = "Select This Ship"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Footer/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Footer/SelectButton" to="." method="_on_select_pressed"]

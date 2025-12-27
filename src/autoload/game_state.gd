@@ -3,7 +3,7 @@ extends Node
 # GameState - Manages current game session and persistence
 
 const SAVE_PATH := "user://savegame.json"
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 
 var player: Player = null
 var price_drifts: Dictionary = {}  # {planet_id: {commodity_id: float}}
@@ -21,16 +21,25 @@ signal news_event_ended(event: NewsEvent)
 func _ready() -> void:
 	pass
 
-func new_game() -> void:
-	player = Player.new()
-	player.ship = DataRepo.get_starting_ship()
-	player.fuel = player.ship.fuel_capacity
+# Called when user clicks "New Game" - prepares world state before ship selection
+func start_new_game() -> void:
+	player = null
 	_init_price_drifts()
 	_init_planet_stocks()
 	active_news_events.clear()
+	is_game_active = false
+
+# Called after player selects their ship - finalizes game start
+func finalize_new_game(ship_id: String) -> void:
+	player = Player.new()
+	player.ship = DataRepo.create_ship(ship_id)
+	if player.ship == null:
+		push_error("GameState: Failed to create ship: " + ship_id)
+		return
+	player.fuel = player.ship.fuel_tank
 	is_game_active = true
 	game_started.emit()
-	print("GameState: New game started")
+	print("GameState: New game started with ship: " + ship_id)
 
 func _init_price_drifts() -> void:
 	price_drifts.clear()
@@ -363,25 +372,19 @@ func load_game() -> bool:
 	var save_data: Dictionary = json.data
 	var version: int = save_data.get("version", 0)
 
-	if version < 1 or version > SAVE_VERSION:
-		push_error("GameState: Incompatible save version")
+	# Only support v3 saves (new ship system)
+	if version != SAVE_VERSION:
+		push_error("GameState: Incompatible save version (expected %d, got %d)" % [SAVE_VERSION, version])
 		return false
 
 	player = Player.from_dict(save_data.get("player", {}))
 	price_drifts = save_data.get("price_drifts", {})
+	planet_stocks = save_data.get("planet_stocks", {})
 
-	# Load v2 data or initialize defaults
-	if version >= 2:
-		planet_stocks = save_data.get("planet_stocks", {})
-		active_news_events.clear()
-		var news_events_data: Array = save_data.get("active_news_events", [])
-		for event_data in news_events_data:
-			active_news_events.append(NewsEvent.from_dict(event_data))
-	else:
-		# Upgrade from v1: initialize stocks fresh
-		_init_planet_stocks()
-		active_news_events.clear()
-		print("GameState: Upgraded save from v1 to v2")
+	active_news_events.clear()
+	var news_events_data: Array = save_data.get("active_news_events", [])
+	for event_data in news_events_data:
+		active_news_events.append(NewsEvent.from_dict(event_data))
 
 	is_game_active = true
 

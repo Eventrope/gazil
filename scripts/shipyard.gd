@@ -22,9 +22,9 @@ func _update_display() -> void:
 	credits_label.text = "Credits: %s" % _format_number(player.credits)
 
 	ship_title.text = "Your Ship: %s" % ship.ship_name
-	cargo_stat.text = "Cargo Capacity: %d" % ship.cargo_capacity
-	fuel_cap_stat.text = "Fuel Capacity: %d (Current: %d)" % [ship.fuel_capacity, player.fuel]
-	efficiency_stat.text = "Fuel Efficiency: %d%%" % int(100.0 / ship.fuel_efficiency)
+	cargo_stat.text = "Cargo Capacity: %d tonnes" % ship.cargo_tonnes
+	fuel_cap_stat.text = "Fuel Tank: %d (Current: %d)" % [ship.fuel_tank, player.fuel]
+	efficiency_stat.text = "Fuel Burn: %.1f per distance" % ship.fuel_burn_per_distance
 
 	_update_installed_list()
 	_update_upgrade_list()
@@ -111,7 +111,7 @@ func _get_fuel_price() -> int:
 
 func _update_refuel_button() -> void:
 	var player := GameState.player
-	var needed := player.ship.fuel_capacity - player.fuel
+	var needed := player.ship.fuel_tank - player.fuel
 	var fuel_price := _get_fuel_price()
 	if needed <= 0:
 		refuel_button.text = "Tank Full"
@@ -131,7 +131,7 @@ func _on_upgrade_pressed(upgrade_id: String) -> void:
 
 func _on_refuel_pressed() -> void:
 	var player := GameState.player
-	var needed := player.ship.fuel_capacity - player.fuel
+	var needed := player.ship.fuel_tank - player.fuel
 	var fuel_price := _get_fuel_price()
 
 	if needed <= 0:
