@@ -156,6 +156,10 @@ func _on_refuel_pressed() -> void:
 func _on_back_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/galaxy_map.tscn")
 
+func _on_main_menu_pressed() -> void:
+	GameState.return_to_main_menu()
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
 func _show_message(text: String, color: Color) -> void:
 	message_label.text = text
 	message_label.add_theme_color_override("font_color", color)

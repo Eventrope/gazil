@@ -204,28 +204,28 @@
         "pluto": 12
       },
       "price_modifiers": {
-        "food": 1.2,
-        "ore": 0.7,
-        "tech": 1.0,
-        "luxury": 1.1,
-        "fuel_cells": 0.9,
-        "medicine": 1.1
+        "food": 1.4,
+        "ore": 0.5,
+        "tech": 1.1,
+        "luxury": 1.3,
+        "fuel_cells": 1.0,
+        "medicine": 1.2
       },
       "base_stock": {
-        "food": 300,
-        "ore": 600,
-        "tech": 200,
-        "luxury": 100,
-        "fuel_cells": 350,
-        "medicine": 150
+        "food": 220,
+        "ore": 900,
+        "tech": 180,
+        "luxury": 80,
+        "fuel_cells": 320,
+        "medicine": 120
       },
       "stock_regen_rate": {
-        "food": 30,
-        "ore": 60,
-        "tech": 20,
-        "luxury": 10,
-        "fuel_cells": 35,
-        "medicine": 15
+        "food": 22,
+        "ore": 90,
+        "tech": 18,
+        "luxury": 8,
+        "fuel_cells": 32,
+        "medicine": 12
       },
       "supply_volatility": 0.12,
       "fuel_price_modifier": 0.85
@@ -254,23 +254,23 @@
         "ore": 1.1,
         "tech": 1.2,
         "luxury": 1.6,
-        "fuel_cells": 0.4,
+        "fuel_cells": 0.3,
         "medicine": 1.3
       },
       "base_stock": {
-        "food": 200,
+        "food": 180,
         "ore": 150,
         "tech": 150,
         "luxury": 80,
-        "fuel_cells": 800,
+        "fuel_cells": 950,
         "medicine": 120
       },
       "stock_regen_rate": {
-        "food": 20,
+        "food": 18,
         "ore": 15,
         "tech": 15,
         "luxury": 8,
-        "fuel_cells": 80,
+        "fuel_cells": 95,
         "medicine": 12
       },
       "supply_volatility": 0.18,
@@ -342,7 +342,7 @@
         "pluto": 11
       },
       "price_modifiers": {
-        "food": 0.6,
+        "food": 0.5,
         "ore": 1.4,
         "tech": 1.2,
         "luxury": 1.5,
@@ -350,16 +350,16 @@
         "medicine": 1.0
       },
       "base_stock": {
-        "food": 700,
-        "ore": 100,
+        "food": 850,
+        "ore": 80,
         "tech": 150,
         "luxury": 80,
         "fuel_cells": 300,
         "medicine": 200
       },
       "stock_regen_rate": {
-        "food": 70,
-        "ore": 10,
+        "food": 85,
+        "ore": 8,
         "tech": 15,
         "luxury": 8,
         "fuel_cells": 30,
@@ -389,7 +389,7 @@
       },
       "price_modifiers": {
         "food": 1.7,
-        "ore": 0.8,
+        "ore": 0.7,
         "tech": 1.3,
         "luxury": 1.5,
         "fuel_cells": 0.6,
@@ -397,7 +397,7 @@
       },
       "base_stock": {
         "food": 150,
-        "ore": 500,
+        "ore": 650,
         "tech": 150,
         "luxury": 80,
         "fuel_cells": 500,
@@ -405,7 +405,7 @@
       },
       "stock_regen_rate": {
         "food": 15,
-        "ore": 50,
+        "ore": 65,
         "tech": 15,
         "luxury": 8,
         "fuel_cells": 50,

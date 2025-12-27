@@ -41,6 +41,13 @@ func finalize_new_game(ship_id: String) -> void:
 	game_started.emit()
 	print("GameState: New game started with ship: " + ship_id)
 
+func return_to_main_menu() -> void:
+	player = null
+	is_game_active = false
+	price_drifts.clear()
+	planet_stocks.clear()
+	active_news_events.clear()
+
 func _init_price_drifts() -> void:
 	price_drifts.clear()
 	for planet_id in DataRepo.get_all_planet_ids():
