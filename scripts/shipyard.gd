@@ -1,6 +1,6 @@
 extends Control
 
-const FUEL_PRICE := 5
+const BASE_FUEL_PRICE := 5
 
 @onready var credits_label: Label = $MarginContainer/VBoxContainer/Header/CreditsLabel
 @onready var ship_title: Label = $MarginContainer/VBoxContainer/ContentContainer/ShipStats/ShipTitle
@@ -106,16 +106,20 @@ func _create_upgrade_row(upgrade: Dictionary) -> VBoxContainer:
 
 	return container
 
+func _get_fuel_price() -> int:
+	return GameState.get_fuel_price_at(GameState.player.current_planet)
+
 func _update_refuel_button() -> void:
 	var player := GameState.player
 	var needed := player.ship.fuel_capacity - player.fuel
+	var fuel_price := _get_fuel_price()
 	if needed <= 0:
 		refuel_button.text = "Tank Full"
 		refuel_button.disabled = true
 	else:
-		var cost := needed * FUEL_PRICE
-		refuel_button.text = "Refuel +%d (%d cr)" % [needed, cost]
-		refuel_button.disabled = player.credits < FUEL_PRICE
+		var cost := needed * fuel_price
+		refuel_button.text = "Refuel +%d (%d cr @ %d cr/unit)" % [needed, cost, fuel_price]
+		refuel_button.disabled = player.credits < fuel_price
 
 func _on_upgrade_pressed(upgrade_id: String) -> void:
 	var result := GameState.buy_upgrade(upgrade_id)
@@ -128,20 +132,21 @@ func _on_upgrade_pressed(upgrade_id: String) -> void:
 func _on_refuel_pressed() -> void:
 	var player := GameState.player
 	var needed := player.ship.fuel_capacity - player.fuel
+	var fuel_price := _get_fuel_price()
 
 	if needed <= 0:
 		_show_message("Tank is already full!", Color(0.9, 0.7, 0.2))
 		return
 
 	# Calculate how much fuel we can afford
-	var affordable: int = player.credits / FUEL_PRICE
+	var affordable: int = player.credits / fuel_price
 	var to_buy: int = min(needed, affordable)
 
 	if to_buy <= 0:
 		_show_message("Not enough credits!", Color(0.9, 0.3, 0.3))
 		return
 
-	var cost: int = to_buy * FUEL_PRICE
+	var cost: int = to_buy * fuel_price
 	player.spend_credits(cost)
 	player.add_fuel(to_buy)
 

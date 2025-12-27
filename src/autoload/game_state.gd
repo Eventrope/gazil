@@ -3,15 +3,20 @@ extends Node
 # GameState - Manages current game session and persistence
 
 const SAVE_PATH := "user://savegame.json"
+const SAVE_VERSION := 2
 
 var player: Player = null
 var price_drifts: Dictionary = {}  # {planet_id: {commodity_id: float}}
+var planet_stocks: Dictionary = {}  # {planet_id: {commodity_id: int}}
+var active_news_events: Array = []  # Array of NewsEvent
 var is_game_active := false
 
 signal game_started()
 signal game_ended(won: bool)
 signal day_advanced(new_day: int)
 signal player_traveled(from_planet: String, to_planet: String)
+signal news_event_started(event: NewsEvent)
+signal news_event_ended(event: NewsEvent)
 
 func _ready() -> void:
 	pass
@@ -21,6 +26,8 @@ func new_game() -> void:
 	player.ship = DataRepo.get_starting_ship()
 	player.fuel = player.ship.fuel_capacity
 	_init_price_drifts()
+	_init_planet_stocks()
+	active_news_events.clear()
 	is_game_active = true
 	game_started.emit()
 	print("GameState: New game started")
@@ -32,19 +39,45 @@ func _init_price_drifts() -> void:
 		for commodity_id in DataRepo.get_all_commodity_ids():
 			price_drifts[planet_id][commodity_id] = 0.0
 
+func _init_planet_stocks() -> void:
+	planet_stocks.clear()
+	for planet_id in DataRepo.get_all_planet_ids():
+		planet_stocks[planet_id] = {}
+		var planet := DataRepo.get_planet(planet_id)
+		for commodity_id in DataRepo.get_all_commodity_ids():
+			planet_stocks[planet_id][commodity_id] = planet.get_base_stock(commodity_id)
+
 func get_price_at(planet_id: String, commodity_id: String) -> int:
 	var planet := DataRepo.get_planet(planet_id)
 	var commodity := DataRepo.get_commodity(commodity_id)
 	if planet == null or commodity == null:
 		return 0
 	var drift: float = price_drifts.get(planet_id, {}).get(commodity_id, 0.0)
-	return commodity.get_price_at(planet, drift)
+
+	# Get news event effects
+	var news_effects := NewsManager.get_combined_effects(active_news_events, planet_id, commodity_id)
+	var news_modifier: float = news_effects["price_modifier"]
+
+	# Calculate stock effect on price
+	var current_stock: int = get_stock_at(planet_id, commodity_id)
+	var base_stock: int = planet.get_base_stock(commodity_id)
+	var stock_ratio: float = float(current_stock) / float(max(base_stock, 1))
+	# Low stock = higher prices, high stock = lower prices
+	# At 0% stock: +25%, at 100% stock: normal, at 200% stock: -25%
+	var stock_effect: float = 1.0 + (0.5 - stock_ratio) * 0.5
+	stock_effect = clampf(stock_effect, 0.75, 1.5)
+
+	var base_price: int = commodity.get_price_at(planet, drift)
+	var final_price: int = int(max(1, round(base_price * news_modifier * stock_effect)))
+	return final_price
 
 func advance_day(days: int = 1) -> void:
 	if player == null:
 		return
 	player.day += days
 	_drift_prices()
+	_regenerate_stocks(days)
+	_process_news_events()
 	day_advanced.emit(player.day)
 
 func _drift_prices() -> void:
@@ -65,6 +98,36 @@ func _drift_prices() -> void:
 			new_drift = clampf(new_drift, -0.5, 0.5)
 			price_drifts[planet_id][commodity_id] = new_drift
 
+func _regenerate_stocks(days: int) -> void:
+	for planet_id in planet_stocks:
+		var planet := DataRepo.get_planet(planet_id)
+		if planet == null:
+			continue
+		for commodity_id in planet_stocks[planet_id]:
+			var current: int = planet_stocks[planet_id][commodity_id]
+			var base: int = planet.get_base_stock(commodity_id)
+			var regen_rate: float = planet.get_stock_regen(commodity_id)
+			# Regenerate toward base stock
+			var regen_amount: int = int(regen_rate * days)
+			if current < base:
+				planet_stocks[planet_id][commodity_id] = mini(current + regen_amount, base)
+			elif current > base * 2:
+				# If overstocked, slowly decay toward base
+				planet_stocks[planet_id][commodity_id] = maxi(current - regen_amount / 2, base)
+
+func _process_news_events() -> void:
+	var result := NewsManager.process_day(player.day, active_news_events)
+
+	# Remove expired events
+	for expired_event in result["expired"]:
+		active_news_events.erase(expired_event)
+		news_event_ended.emit(expired_event)
+
+	# Add new event if one was spawned
+	if result["new_event"] != null:
+		active_news_events.append(result["new_event"])
+		news_event_started.emit(result["new_event"])
+
 func travel_to(planet_id: String) -> Dictionary:
 	# Returns {success: bool, message: String, event: GameEvent or null}
 	if player == null:
@@ -79,7 +142,20 @@ func travel_to(planet_id: String) -> Dictionary:
 	if player.current_planet == planet_id:
 		return {"success": false, "message": "Already at this planet", "event": null}
 
-	var distance := current.get_distance_to(planet_id)
+	# Check if destination is unlocked
+	if not destination.is_unlocked(player.day):
+		return {"success": false, "message": "Destination unlocks on Day %d" % destination.unlock_day, "event": null}
+
+	# Check if destination is accessible (not blocked by news event)
+	if not is_planet_accessible(planet_id):
+		return {"success": false, "message": "Destination is currently blocked", "event": null}
+
+	var base_distance := current.get_distance_to(planet_id)
+
+	# Apply travel time modifier from news events
+	var travel_modifier := NewsManager.get_travel_time_modifier(active_news_events, player.current_planet, planet_id)
+	var distance := int(ceil(base_distance * travel_modifier))
+
 	var fuel_cost := player.ship.get_fuel_cost(distance)
 
 	if player.fuel < fuel_cost:
@@ -97,12 +173,17 @@ func travel_to(planet_id: String) -> Dictionary:
 
 	player_traveled.emit(from_planet, planet_id)
 
-	# Check for random event
-	var event := EventManager.roll_event("travel")
+	# Check for random event (with news modifier for increased danger)
+	var event_chance_modifier := NewsManager.get_event_chance_modifier(active_news_events, from_planet, planet_id)
+	var event := EventManager.roll_event("travel", event_chance_modifier)
+
+	var travel_msg := "Traveled to %s (-%d fuel, %d days)" % [destination.planet_name, fuel_cost, distance]
+	if travel_modifier > 1.0:
+		travel_msg += " [Delayed by events]"
 
 	return {
 		"success": true,
-		"message": "Traveled to %s (-%d fuel, %d days)" % [destination.planet_name, fuel_cost, distance],
+		"message": travel_msg,
 		"event": event
 	}
 
@@ -113,6 +194,11 @@ func buy_commodity(commodity_id: String, quantity: int) -> Dictionary:
 	var commodity := DataRepo.get_commodity(commodity_id)
 	if commodity == null:
 		return {"success": false, "message": "Unknown commodity"}
+
+	# Check available stock
+	var available_stock := get_stock_at(player.current_planet, commodity_id)
+	if available_stock < quantity:
+		return {"success": false, "message": "Not enough stock (only %d available)" % available_stock}
 
 	var price := get_price_at(player.current_planet, commodity_id)
 	var total_cost := price * quantity
@@ -127,6 +213,9 @@ func buy_commodity(commodity_id: String, quantity: int) -> Dictionary:
 	player.spend_credits(total_cost)
 	player.add_cargo(commodity_id, quantity)
 	player.statistics["trades_made"] += 1
+
+	# Reduce planet stock
+	_modify_stock(player.current_planet, commodity_id, -quantity)
 
 	return {"success": true, "message": "Bought %d %s for %d credits" % [quantity, commodity.commodity_name, total_cost]}
 
@@ -147,6 +236,9 @@ func sell_commodity(commodity_id: String, quantity: int) -> Dictionary:
 	player.remove_cargo(commodity_id, quantity)
 	player.add_credits(total_value)
 	player.statistics["trades_made"] += 1
+
+	# Increase planet stock
+	_modify_stock(player.current_planet, commodity_id, quantity)
 
 	return {"success": true, "message": "Sold %d %s for %d credits" % [quantity, commodity.commodity_name, total_value]}
 
@@ -200,14 +292,44 @@ func check_game_over() -> Dictionary:
 
 	return {"game_over": false, "won": false, "reason": ""}
 
+# --- Stock and News Helper Functions ---
+
+func get_stock_at(planet_id: String, commodity_id: String) -> int:
+	return planet_stocks.get(planet_id, {}).get(commodity_id, 0)
+
+func _modify_stock(planet_id: String, commodity_id: String, amount: int) -> void:
+	if not planet_stocks.has(planet_id):
+		planet_stocks[planet_id] = {}
+	var current: int = planet_stocks[planet_id].get(commodity_id, 0)
+	planet_stocks[planet_id][commodity_id] = maxi(0, current + amount)
+
+func is_planet_accessible(planet_id: String) -> bool:
+	return NewsManager.is_planet_accessible(active_news_events, planet_id)
+
+func get_active_news_events() -> Array:
+	return active_news_events
+
+func get_fuel_price_at(planet_id: String) -> int:
+	var planet := DataRepo.get_planet(planet_id)
+	if planet == null:
+		return 5
+	return int(max(1, round(5.0 * planet.fuel_price_modifier)))
+
 func save_game() -> bool:
 	if player == null:
 		return false
 
+	# Serialize news events
+	var news_events_data: Array = []
+	for event in active_news_events:
+		news_events_data.append(event.to_dict())
+
 	var save_data := {
-		"version": 1,
+		"version": SAVE_VERSION,
 		"player": player.to_dict(),
-		"price_drifts": price_drifts
+		"price_drifts": price_drifts,
+		"planet_stocks": planet_stocks,
+		"active_news_events": news_events_data
 	}
 
 	var json_string := JSON.stringify(save_data, "\t")
@@ -239,13 +361,28 @@ func load_game() -> bool:
 		return false
 
 	var save_data: Dictionary = json.data
+	var version: int = save_data.get("version", 0)
 
-	if save_data.get("version", 0) != 1:
+	if version < 1 or version > SAVE_VERSION:
 		push_error("GameState: Incompatible save version")
 		return false
 
 	player = Player.from_dict(save_data.get("player", {}))
 	price_drifts = save_data.get("price_drifts", {})
+
+	# Load v2 data or initialize defaults
+	if version >= 2:
+		planet_stocks = save_data.get("planet_stocks", {})
+		active_news_events.clear()
+		var news_events_data: Array = save_data.get("active_news_events", [])
+		for event_data in news_events_data:
+			active_news_events.append(NewsEvent.from_dict(event_data))
+	else:
+		# Upgrade from v1: initialize stocks fresh
+		_init_planet_stocks()
+		active_news_events.clear()
+		print("GameState: Upgraded save from v1 to v2")
+
 	is_game_active = true
 
 	print("GameState: Game loaded")

@@ -16,9 +16,10 @@ func _ready() -> void:
 func set_seed(seed_value: int) -> void:
 	rng.seed = seed_value
 
-func roll_event(trigger: String) -> GameEvent:
-	# Check if event triggers at all
-	if rng.randf() > EVENT_CHANCE:
+func roll_event(trigger: String, chance_modifier: float = 1.0) -> GameEvent:
+	# Check if event triggers at all (modified by news events)
+	var adjusted_chance := EVENT_CHANCE * chance_modifier
+	if rng.randf() > adjusted_chance:
 		return null
 
 	var possible_events := DataRepo.get_events_for_trigger(trigger)

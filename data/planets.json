@@ -4,12 +4,20 @@
       "id": "earth",
       "name": "Earth",
       "description": "Humanity's homeworld. Balanced prices, a safe place to start your trading career.",
+      "unlock_day": 0,
+      "category": "inner_system",
       "distance_from": {
-        "mars": 2,
+        "mercury": 1,
         "venus": 1,
+        "mars": 2,
+        "ceres": 3,
         "jupiter": 5,
+        "europa": 5,
+        "ganymede": 5,
         "saturn": 8,
-        "titan": 9
+        "titan": 9,
+        "neptune": 12,
+        "pluto": 15
       },
       "price_modifiers": {
         "food": 1.0,
@@ -19,39 +27,89 @@
         "fuel_cells": 1.0,
         "medicine": 1.0
       },
-      "supply_volatility": 0.1
+      "base_stock": {
+        "food": 500,
+        "ore": 200,
+        "tech": 300,
+        "luxury": 150,
+        "fuel_cells": 400,
+        "medicine": 250
+      },
+      "stock_regen_rate": {
+        "food": 50,
+        "ore": 20,
+        "tech": 30,
+        "luxury": 15,
+        "fuel_cells": 40,
+        "medicine": 25
+      },
+      "supply_volatility": 0.1,
+      "fuel_price_modifier": 0.7
     },
     {
-      "id": "mars",
-      "name": "Mars Colony",
-      "description": "Industrial mining hub. Cheap ore, but food is scarce and expensive.",
+      "id": "mercury",
+      "name": "Mercury Mining Outpost",
+      "description": "Extreme heat mining operation. Solar energy abundant, ore plentiful, but harsh conditions mean high prices for comfort goods.",
+      "unlock_day": 0,
+      "category": "inner_system",
       "distance_from": {
-        "earth": 2,
-        "venus": 3,
-        "jupiter": 4,
-        "saturn": 6,
-        "titan": 7
+        "earth": 1,
+        "venus": 1,
+        "mars": 3,
+        "ceres": 4,
+        "jupiter": 6,
+        "europa": 6,
+        "ganymede": 6,
+        "saturn": 9,
+        "titan": 10,
+        "neptune": 13,
+        "pluto": 16
       },
       "price_modifiers": {
-        "food": 1.8,
-        "ore": 0.5,
-        "tech": 1.1,
-        "luxury": 1.3,
-        "fuel_cells": 0.9,
-        "medicine": 1.4
+        "food": 1.6,
+        "ore": 0.4,
+        "tech": 1.3,
+        "luxury": 2.0,
+        "fuel_cells": 0.5,
+        "medicine": 1.5
       },
-      "supply_volatility": 0.15
+      "base_stock": {
+        "food": 100,
+        "ore": 800,
+        "tech": 150,
+        "luxury": 50,
+        "fuel_cells": 600,
+        "medicine": 100
+      },
+      "stock_regen_rate": {
+        "food": 10,
+        "ore": 80,
+        "tech": 15,
+        "luxury": 5,
+        "fuel_cells": 60,
+        "medicine": 10
+      },
+      "supply_volatility": 0.2,
+      "fuel_price_modifier": 0.5
     },
     {
       "id": "venus",
       "name": "Venus Station",
       "description": "Floating cloud cities. A hub for luxury goods and high technology.",
+      "unlock_day": 0,
+      "category": "inner_system",
       "distance_from": {
         "earth": 1,
+        "mercury": 1,
         "mars": 3,
+        "ceres": 4,
         "jupiter": 6,
+        "europa": 6,
+        "ganymede": 6,
         "saturn": 9,
-        "titan": 10
+        "titan": 10,
+        "neptune": 13,
+        "pluto": 16
       },
       "price_modifiers": {
         "food": 1.3,
@@ -61,18 +119,135 @@
         "fuel_cells": 1.2,
         "medicine": 0.9
       },
-      "supply_volatility": 0.12
+      "base_stock": {
+        "food": 200,
+        "ore": 100,
+        "tech": 400,
+        "luxury": 300,
+        "fuel_cells": 200,
+        "medicine": 200
+      },
+      "stock_regen_rate": {
+        "food": 20,
+        "ore": 10,
+        "tech": 40,
+        "luxury": 30,
+        "fuel_cells": 20,
+        "medicine": 20
+      },
+      "supply_volatility": 0.12,
+      "fuel_price_modifier": 1.0
+    },
+    {
+      "id": "mars",
+      "name": "Mars Colony",
+      "description": "Industrial mining hub. Cheap ore, but food is scarce and expensive.",
+      "unlock_day": 0,
+      "category": "inner_system",
+      "distance_from": {
+        "earth": 2,
+        "mercury": 3,
+        "venus": 3,
+        "ceres": 2,
+        "jupiter": 4,
+        "europa": 4,
+        "ganymede": 4,
+        "saturn": 6,
+        "titan": 7,
+        "neptune": 10,
+        "pluto": 13
+      },
+      "price_modifiers": {
+        "food": 1.8,
+        "ore": 0.5,
+        "tech": 1.1,
+        "luxury": 1.3,
+        "fuel_cells": 0.9,
+        "medicine": 1.4
+      },
+      "base_stock": {
+        "food": 150,
+        "ore": 700,
+        "tech": 200,
+        "luxury": 100,
+        "fuel_cells": 350,
+        "medicine": 150
+      },
+      "stock_regen_rate": {
+        "food": 15,
+        "ore": 70,
+        "tech": 20,
+        "luxury": 10,
+        "fuel_cells": 35,
+        "medicine": 15
+      },
+      "supply_volatility": 0.15,
+      "fuel_price_modifier": 0.85
+    },
+    {
+      "id": "ceres",
+      "name": "Ceres Station",
+      "description": "Asteroid belt hub. A crossroads for traders, with moderate prices and high traffic.",
+      "unlock_day": 10,
+      "category": "belt",
+      "distance_from": {
+        "earth": 3,
+        "mercury": 4,
+        "venus": 4,
+        "mars": 2,
+        "jupiter": 2,
+        "europa": 3,
+        "ganymede": 3,
+        "saturn": 5,
+        "titan": 6,
+        "neptune": 9,
+        "pluto": 12
+      },
+      "price_modifiers": {
+        "food": 1.2,
+        "ore": 0.7,
+        "tech": 1.0,
+        "luxury": 1.1,
+        "fuel_cells": 0.9,
+        "medicine": 1.1
+      },
+      "base_stock": {
+        "food": 300,
+        "ore": 600,
+        "tech": 200,
+        "luxury": 100,
+        "fuel_cells": 350,
+        "medicine": 150
+      },
+      "stock_regen_rate": {
+        "food": 30,
+        "ore": 60,
+        "tech": 20,
+        "luxury": 10,
+        "fuel_cells": 35,
+        "medicine": 15
+      },
+      "supply_volatility": 0.12,
+      "fuel_price_modifier": 0.85
     },
     {
       "id": "jupiter",
       "name": "Jupiter Orbital",
       "description": "Massive fuel harvesting station. Fuel cells are dirt cheap here.",
+      "unlock_day": 0,
+      "category": "outer_system",
       "distance_from": {
         "earth": 5,
-        "mars": 4,
+        "mercury": 6,
         "venus": 6,
+        "mars": 4,
+        "ceres": 2,
+        "europa": 1,
+        "ganymede": 1,
         "saturn": 3,
-        "titan": 4
+        "titan": 4,
+        "neptune": 7,
+        "pluto": 10
       },
       "price_modifiers": {
         "food": 1.5,
@@ -82,18 +257,181 @@
         "fuel_cells": 0.4,
         "medicine": 1.3
       },
-      "supply_volatility": 0.18
+      "base_stock": {
+        "food": 200,
+        "ore": 150,
+        "tech": 150,
+        "luxury": 80,
+        "fuel_cells": 800,
+        "medicine": 120
+      },
+      "stock_regen_rate": {
+        "food": 20,
+        "ore": 15,
+        "tech": 15,
+        "luxury": 8,
+        "fuel_cells": 80,
+        "medicine": 12
+      },
+      "supply_volatility": 0.18,
+      "fuel_price_modifier": 0.4
+    },
+    {
+      "id": "europa",
+      "name": "Europa Ice Colony",
+      "description": "Subsurface ocean colony beneath the ice. Water extraction makes fuel cells cheap, but imported goods are expensive.",
+      "unlock_day": 15,
+      "category": "outer_system",
+      "distance_from": {
+        "earth": 5,
+        "mercury": 6,
+        "venus": 6,
+        "mars": 4,
+        "ceres": 3,
+        "jupiter": 1,
+        "ganymede": 1,
+        "saturn": 3,
+        "titan": 4,
+        "neptune": 8,
+        "pluto": 11
+      },
+      "price_modifiers": {
+        "food": 1.7,
+        "ore": 1.3,
+        "tech": 1.4,
+        "luxury": 1.9,
+        "fuel_cells": 0.3,
+        "medicine": 1.6
+      },
+      "base_stock": {
+        "food": 150,
+        "ore": 100,
+        "tech": 100,
+        "luxury": 50,
+        "fuel_cells": 700,
+        "medicine": 80
+      },
+      "stock_regen_rate": {
+        "food": 15,
+        "ore": 10,
+        "tech": 10,
+        "luxury": 5,
+        "fuel_cells": 70,
+        "medicine": 8
+      },
+      "supply_volatility": 0.18,
+      "fuel_price_modifier": 0.4
+    },
+    {
+      "id": "ganymede",
+      "name": "Ganymede Agricultural Dome",
+      "description": "Massive enclosed farming operation. Fresh food is actually cheap here, making it unique in the outer system.",
+      "unlock_day": 15,
+      "category": "outer_system",
+      "distance_from": {
+        "earth": 5,
+        "mercury": 6,
+        "venus": 6,
+        "mars": 4,
+        "ceres": 3,
+        "jupiter": 1,
+        "europa": 1,
+        "saturn": 3,
+        "titan": 4,
+        "neptune": 8,
+        "pluto": 11
+      },
+      "price_modifiers": {
+        "food": 0.6,
+        "ore": 1.4,
+        "tech": 1.2,
+        "luxury": 1.5,
+        "fuel_cells": 0.8,
+        "medicine": 1.0
+      },
+      "base_stock": {
+        "food": 700,
+        "ore": 100,
+        "tech": 150,
+        "luxury": 80,
+        "fuel_cells": 300,
+        "medicine": 200
+      },
+      "stock_regen_rate": {
+        "food": 70,
+        "ore": 10,
+        "tech": 15,
+        "luxury": 8,
+        "fuel_cells": 30,
+        "medicine": 20
+      },
+      "supply_volatility": 0.15,
+      "fuel_price_modifier": 0.9
+    },
+    {
+      "id": "saturn",
+      "name": "Saturn Ring Station",
+      "description": "Mining operation in the rings. Rare minerals fetch premium prices here.",
+      "unlock_day": 0,
+      "category": "outer_system",
+      "distance_from": {
+        "earth": 8,
+        "mercury": 9,
+        "venus": 9,
+        "mars": 6,
+        "ceres": 5,
+        "jupiter": 3,
+        "europa": 3,
+        "ganymede": 3,
+        "titan": 1,
+        "neptune": 4,
+        "pluto": 7
+      },
+      "price_modifiers": {
+        "food": 1.7,
+        "ore": 0.8,
+        "tech": 1.3,
+        "luxury": 1.5,
+        "fuel_cells": 0.6,
+        "medicine": 1.4
+      },
+      "base_stock": {
+        "food": 150,
+        "ore": 500,
+        "tech": 150,
+        "luxury": 80,
+        "fuel_cells": 500,
+        "medicine": 100
+      },
+      "stock_regen_rate": {
+        "food": 15,
+        "ore": 50,
+        "tech": 15,
+        "luxury": 8,
+        "fuel_cells": 50,
+        "medicine": 10
+      },
+      "supply_volatility": 0.2,
+      "fuel_price_modifier": 0.7
     },
     {
       "id": "titan",
       "name": "Titan Research Base",
       "description": "Remote scientific outpost. High demand for everything, but medicine sells well.",
+      "unlock_day": 0,
+      "category": "outer_system",
       "distance_from": {
         "earth": 9,
-        "mars": 7,
+        "mercury": 10,
         "venus": 10,
+        "mars": 7,
+        "ceres": 6,
         "jupiter": 4,
-        "saturn": 1
+        "europa": 4,
+        "ganymede": 4,
+        "saturn": 1,
+        "neptune": 3,
+        "pluto": 6
       },
       "price_modifiers": {
         "food": 2.0,
@@ -103,7 +441,116 @@
         "fuel_cells": 1.1,
         "medicine": 2.2
       },
-      "supply_volatility": 0.25
+      "base_stock": {
+        "food": 100,
+        "ore": 80,
+        "tech": 120,
+        "luxury": 50,
+        "fuel_cells": 200,
+        "medicine": 60
+      },
+      "stock_regen_rate": {
+        "food": 10,
+        "ore": 8,
+        "tech": 12,
+        "luxury": 5,
+        "fuel_cells": 20,
+        "medicine": 6
+      },
+      "supply_volatility": 0.25,
+      "fuel_price_modifier": 1.2
+    },
+    {
+      "id": "neptune",
+      "name": "Neptune Orbital Platform",
+      "description": "Remote gas harvesting facility. Extreme distances mean everything is expensive except fuel.",
+      "unlock_day": 25,
+      "category": "outer_system",
+      "distance_from": {
+        "earth": 12,
+        "mercury": 13,
+        "venus": 13,
+        "mars": 10,
+        "ceres": 9,
+        "jupiter": 7,
+        "europa": 8,
+        "ganymede": 8,
+        "saturn": 4,
+        "titan": 3,
+        "pluto": 3
+      },
+      "price_modifiers": {
+        "food": 2.2,
+        "ore": 1.6,
+        "tech": 1.5,
+        "luxury": 2.5,
+        "fuel_cells": 0.35,
+        "medicine": 2.0
+      },
+      "base_stock": {
+        "food": 80,
+        "ore": 50,
+        "tech": 60,
+        "luxury": 30,
+        "fuel_cells": 900,
+        "medicine": 40
+      },
+      "stock_regen_rate": {
+        "food": 8,
+        "ore": 5,
+        "tech": 6,
+        "luxury": 3,
+        "fuel_cells": 90,
+        "medicine": 4
+      },
+      "supply_volatility": 0.25,
+      "fuel_price_modifier": 0.35
+    },
+    {
+      "id": "pluto",
+      "name": "Pluto Research Outpost",
+      "description": "Edge of the solar system. Cutting-edge research facility. Everything fetches premium prices this far out.",
+      "unlock_day": 35,
+      "category": "outer_system",
+      "distance_from": {
+        "earth": 15,
+        "mercury": 16,
+        "venus": 16,
+        "mars": 13,
+        "ceres": 12,
+        "jupiter": 10,
+        "europa": 11,
+        "ganymede": 11,
+        "saturn": 7,
+        "titan": 6,
+        "neptune": 3
+      },
+      "price_modifiers": {
+        "food": 2.5,
+        "ore": 1.8,
+        "tech": 1.8,
+        "luxury": 2.8,
+        "fuel_cells": 1.3,
+        "medicine": 2.8
+      },
+      "base_stock": {
+        "food": 50,
+        "ore": 30,
+        "tech": 40,
+        "luxury": 20,
+        "fuel_cells": 100,
+        "medicine": 30
+      },
+      "stock_regen_rate": {
+        "food": 5,
+        "ore": 3,
+        "tech": 4,
+        "luxury": 2,
+        "fuel_cells": 10,
+        "medicine": 3
+      },
+      "supply_volatility": 0.3,
+      "fuel_price_modifier": 1.5
     }
   ]
 }

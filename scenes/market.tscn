@@ -85,6 +85,14 @@ theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
 text = "OWNED"
 horizontal_alignment = 1
 
+[node name="StockHeader" type="Label" parent="MarginContainer/VBoxContainer/TableHeader"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "STOCK"
+horizontal_alignment = 1
+
 [node name="WeightHeader" type="Label" parent="MarginContainer/VBoxContainer/TableHeader"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2

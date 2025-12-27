@@ -5,6 +5,7 @@ extends Node
 var planets: Dictionary = {}  # {id: Planet}
 var commodities: Dictionary = {}  # {id: Commodity}
 var events: Array[GameEvent] = []
+var news_event_templates: Array = []  # Raw template data for news events
 var upgrades: Dictionary = {}  # {id: Dictionary}
 var ships: Dictionary = {}  # {id: Dictionary}
 
@@ -17,11 +18,12 @@ func _load_all_data() -> void:
 	_load_planets()
 	_load_commodities()
 	_load_events()
+	_load_news_events()
 	_load_upgrades()
 	_load_ships()
 	_loaded = true
-	print("DataRepo: Loaded %d planets, %d commodities, %d events, %d upgrades" % [
-		planets.size(), commodities.size(), events.size(), upgrades.size()
+	print("DataRepo: Loaded %d planets, %d commodities, %d events, %d news events, %d upgrades" % [
+		planets.size(), commodities.size(), events.size(), news_event_templates.size(), upgrades.size()
 	])
 
 func _load_json(path: String) -> Variant:
@@ -64,6 +66,12 @@ func _load_events() -> void:
 	for event_data in data["events"]:
 		var game_event := GameEvent.new(event_data)
 		events.append(game_event)
+
+func _load_news_events() -> void:
+	var data = _load_json("res://data/news_events.json")
+	if data == null or not data.has("news_events"):
+		return
+	news_event_templates = data["news_events"]
 
 func _load_upgrades() -> void:
 	var data = _load_json("res://data/upgrades.json")
@@ -148,3 +156,20 @@ func get_commodity_weight(commodity_id: String) -> int:
 	if commodity:
 		return commodity.weight_per_unit
 	return 2  # Default weight
+
+func get_news_event_templates() -> Array:
+	return news_event_templates
+
+func get_unlocked_planets(current_day: int) -> Array:
+	var unlocked: Array = []
+	for planet in planets.values():
+		if planet.is_unlocked(current_day):
+			unlocked.append(planet)
+	return unlocked
+
+func get_locked_planets(current_day: int) -> Array:
+	var locked: Array = []
+	for planet in planets.values():
+		if not planet.is_unlocked(current_day):
+			locked.append(planet)
+	return locked

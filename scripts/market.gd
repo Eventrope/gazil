@@ -42,8 +42,12 @@ func _create_commodity_row(commodity: Commodity) -> HBoxContainer:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 20)
 
-	var price := GameState.get_price_at(GameState.player.current_planet, commodity.id)
+	var current_planet := GameState.player.current_planet
+	var price := GameState.get_price_at(current_planet, commodity.id)
 	var owned := GameState.player.get_cargo_quantity(commodity.id)
+	var stock := GameState.get_stock_at(current_planet, commodity.id)
+	var planet := DataRepo.get_planet(current_planet)
+	var base_stock := planet.get_base_stock(commodity.id)
 
 	# Name
 	var name_label := Label.new()
@@ -52,10 +56,20 @@ func _create_commodity_row(commodity: Commodity) -> HBoxContainer:
 	name_label.add_theme_font_size_override("font_size", 16)
 	row.add_child(name_label)
 
-	# Price
+	# Price with news indicator
 	var price_label := Label.new()
 	price_label.custom_minimum_size.x = 100
-	price_label.text = "%d cr" % price
+	var news_effects := NewsManager.get_combined_effects(
+		GameState.get_active_news_events(), current_planet, commodity.id
+	)
+	var price_text := "%d cr" % price
+	if news_effects["price_modifier"] > 1.0:
+		price_text += " ^"
+		price_label.add_theme_color_override("font_color", Color(0.9, 0.5, 0.3))
+	elif news_effects["price_modifier"] < 1.0:
+		price_text += " v"
+		price_label.add_theme_color_override("font_color", Color(0.3, 0.8, 0.3))
+	price_label.text = price_text
 	price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	price_label.add_theme_font_size_override("font_size", 16)
 	row.add_child(price_label)
@@ -69,6 +83,22 @@ func _create_commodity_row(commodity: Commodity) -> HBoxContainer:
 	if owned > 0:
 		owned_label.add_theme_color_override("font_color", Color(0.4, 0.8, 0.4))
 	row.add_child(owned_label)
+
+	# Stock with color coding
+	var stock_label := Label.new()
+	stock_label.custom_minimum_size.x = 80
+	stock_label.text = str(stock)
+	stock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stock_label.add_theme_font_size_override("font_size", 16)
+	# Color based on stock level relative to base
+	var stock_ratio: float = float(stock) / float(max(base_stock, 1))
+	if stock_ratio > 0.7:
+		stock_label.add_theme_color_override("font_color", Color(0.3, 0.8, 0.3))  # Green - plenty
+	elif stock_ratio > 0.3:
+		stock_label.add_theme_color_override("font_color", Color(0.9, 0.8, 0.3))  # Yellow - moderate
+	else:
+		stock_label.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))  # Red - scarce
+	row.add_child(stock_label)
 
 	# Weight
 	var weight_label := Label.new()
@@ -85,18 +115,20 @@ func _create_commodity_row(commodity: Commodity) -> HBoxContainer:
 	actions.add_theme_constant_override("separation", 10)
 	actions.alignment = BoxContainer.ALIGNMENT_CENTER
 
-	# Buy button
+	# Buy button - disabled if no stock
 	var buy_btn := Button.new()
 	buy_btn.text = "Buy"
 	buy_btn.custom_minimum_size = Vector2(60, 30)
+	buy_btn.disabled = stock < 1
 	buy_btn.pressed.connect(_on_buy_pressed.bind(commodity.id, 1))
 	actions.add_child(buy_btn)
 
-	# Buy 5
+	# Buy 5 - disabled if not enough stock
 	var buy5_btn := Button.new()
 	buy5_btn.text = "+5"
 	buy5_btn.custom_minimum_size = Vector2(50, 30)
-	buy5_btn.pressed.connect(_on_buy_pressed.bind(commodity.id, 5))
+	buy5_btn.disabled = stock < 5
+	buy5_btn.pressed.connect(_on_buy_pressed.bind(commodity.id, mini(5, stock)))
 	actions.add_child(buy5_btn)
 
 	# Sell button
@@ -112,7 +144,7 @@ func _create_commodity_row(commodity: Commodity) -> HBoxContainer:
 	sell5_btn.text = "-5"
 	sell5_btn.custom_minimum_size = Vector2(50, 30)
 	sell5_btn.disabled = owned < 5
-	sell5_btn.pressed.connect(_on_sell_pressed.bind(commodity.id, 5))
+	sell5_btn.pressed.connect(_on_sell_pressed.bind(commodity.id, mini(5, owned)))
 	actions.add_child(sell5_btn)
 
 	# Sell All

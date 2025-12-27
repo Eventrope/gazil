@@ -28,16 +28,51 @@ func _populate_planet_list() -> void:
 	planet_ids.clear()
 
 	var current_planet := DataRepo.get_planet(GameState.player.current_planet)
+	var current_day := GameState.player.day
 
 	for planet in DataRepo.get_all_planets():
 		var display_text: String = planet.planet_name
+
+		# Check if locked
+		if not planet.is_unlocked(current_day):
+			display_text += " [Unlocks Day %d]" % planet.unlock_day
+			planet_list.add_item(display_text)
+			planet_list.set_item_disabled(planet_list.item_count - 1, true)
+			planet_list.set_item_custom_fg_color(planet_list.item_count - 1, Color(0.5, 0.5, 0.5))
+			planet_ids.append(planet.id)
+			continue
+
+		# Check if blocked by news event
+		var is_blocked := not GameState.is_planet_accessible(planet.id)
+
+		# Calculate travel modifier for non-current planets
+		var travel_modifier: float = 1.0
 		if planet.id == GameState.player.current_planet:
 			display_text += " (Current)"
 		else:
-			var distance := current_planet.get_distance_to(planet.id)
-			display_text += " [%d days]" % distance
+			var base_distance := current_planet.get_distance_to(planet.id)
+			travel_modifier = NewsManager.get_travel_time_modifier(
+				GameState.get_active_news_events(), GameState.player.current_planet, planet.id
+			)
+			var distance := int(ceil(base_distance * travel_modifier))
+
+			if travel_modifier > 1.0:
+				display_text += " [%d days - Delayed]" % distance
+			else:
+				display_text += " [%d days]" % distance
+
+		if is_blocked:
+			display_text += " [BLOCKED]"
 
 		planet_list.add_item(display_text)
+
+		# Style blocked or dangerous planets
+		if is_blocked:
+			planet_list.set_item_disabled(planet_list.item_count - 1, true)
+			planet_list.set_item_custom_fg_color(planet_list.item_count - 1, Color(0.8, 0.3, 0.3))
+		elif travel_modifier > 1.0:
+			planet_list.set_item_custom_fg_color(planet_list.item_count - 1, Color(0.9, 0.7, 0.3))
+
 		planet_ids.append(planet.id)
 
 func _update_hud() -> void:
@@ -60,7 +95,7 @@ func _format_number(num: int) -> String:
 		result = str_num[i] + result
 		count += 1
 	return result
-"MEEROPA"
+
 func _clear_selection() -> void:
 	selected_planet_id = ""
 	planet_name.text = "Select a Destination"
@@ -78,9 +113,26 @@ func _on_planet_selected(index: int) -> void:
 	selected_planet_id = planet_ids[index]
 	var planet := DataRepo.get_planet(selected_planet_id)
 	var current := DataRepo.get_planet(GameState.player.current_planet)
+	var current_day := GameState.player.day
 
 	planet_name.text = planet.planet_name
 	planet_description.text = planet.description
+
+	# Check if locked
+	if not planet.is_unlocked(current_day):
+		distance_label.text = "Unlocks on Day %d" % planet.unlock_day
+		fuel_cost_label.text = "Fuel Cost: --"
+		travel_time_label.text = "Travel Time: --"
+		travel_button.disabled = true
+		return
+
+	# Check if blocked
+	if not GameState.is_planet_accessible(selected_planet_id):
+		distance_label.text = "Currently blocked by event"
+		fuel_cost_label.text = "Fuel Cost: --"
+		travel_time_label.text = "Travel Time: --"
+		travel_button.disabled = true
+		return
 
 	if selected_planet_id == GameState.player.current_planet:
 		distance_label.text = "Distance: You are here"
@@ -88,12 +140,22 @@ func _on_planet_selected(index: int) -> void:
 		travel_time_label.text = "Travel Time: --"
 		travel_button.disabled = true
 	else:
-		var distance := current.get_distance_to(selected_planet_id)
+		var base_distance := current.get_distance_to(selected_planet_id)
+		var travel_modifier := NewsManager.get_travel_time_modifier(
+			GameState.get_active_news_events(), GameState.player.current_planet, selected_planet_id
+		)
+		var distance := int(ceil(base_distance * travel_modifier))
 		var fuel_cost := GameState.player.ship.get_fuel_cost(distance)
 
-		distance_label.text = "Distance: %d light years" % distance
+		distance_label.text = "Distance: %d light years" % base_distance
 		fuel_cost_label.text = "Fuel Cost: %d fuel" % fuel_cost
-		travel_time_label.text = "Travel Time: %d days" % distance
+
+		if travel_modifier > 1.0:
+			travel_time_label.text = "Travel Time: %d days (Delayed +%d%%)" % [distance, int((travel_modifier - 1.0) * 100)]
+			travel_time_label.add_theme_color_override("font_color", Color(0.9, 0.7, 0.3))
+		else:
+			travel_time_label.text = "Travel Time: %d days" % distance
+			travel_time_label.remove_theme_color_override("font_color")
 
 		# Check if player can afford the trip
 		if GameState.player.fuel >= fuel_cost:
@@ -135,6 +197,9 @@ func _on_market_pressed() -> void:
 
 func _on_shipyard_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/shipyard.tscn")
+
+func _on_news_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/galactic_news.tscn")
 
 func _on_save_pressed() -> void:
 	if GameState.save_game():

@@ -154,6 +154,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Shipyard"
 
+[node name="NewsButton" type="Button" parent="MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonRow"]
+custom_minimum_size = Vector2(100, 45)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "News"
+
 [node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonRow"]
 custom_minimum_size = Vector2(100, 45)
 layout_mode = 2
@@ -171,4 +177,5 @@ horizontal_alignment = 1
 [connection signal="pressed" from="MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonRow/TravelButton" to="." method="_on_travel_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonRow/MarketButton" to="." method="_on_market_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonRow/ShipyardButton" to="." method="_on_shipyard_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonRow/NewsButton" to="." method="_on_news_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonRow/SaveButton" to="." method="_on_save_pressed"]

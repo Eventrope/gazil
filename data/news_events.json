@@ -1,0 +1,224 @@
+{
+  "news_events": [
+    {
+      "id": "mars_ore_shortage",
+      "headline": "Mining Accident on Mars!",
+      "description": "A major mining accident has halted ore production on Mars. Ore prices are expected to rise significantly.",
+      "category": "economic",
+      "duration_min": 3,
+      "duration_max": 7,
+      "weight": 1.0,
+      "effects": {
+        "planets": ["mars"],
+        "commodities": ["ore"],
+        "price_modifier": 1.8,
+        "stock_modifier": 0.3,
+        "travel_time_modifier": 1.0,
+        "access_blocked": false,
+        "event_chance_modifier": 1.0
+      },
+      "conditions": {
+        "min_day": 1,
+        "max_concurrent": 1
+      }
+    },
+    {
+      "id": "venus_tech_fair",
+      "headline": "Venus Tech Expo Announced",
+      "description": "The annual Venus Technology Expo is drawing buyers from across the system. Tech components are in high demand!",
+      "category": "economic",
+      "duration_min": 5,
+      "duration_max": 10,
+      "weight": 0.8,
+      "effects": {
+        "planets": ["venus"],
+        "commodities": ["tech"],
+        "price_modifier": 1.5,
+        "stock_modifier": 0.5,
+        "travel_time_modifier": 1.0,
+        "access_blocked": false,
+        "event_chance_modifier": 1.0
+      },
+      "conditions": {
+        "min_day": 5,
+        "max_concurrent": 1
+      }
+    },
+    {
+      "id": "food_surplus_earth",
+      "headline": "Record Harvest on Earth!",
+      "description": "Perfect growing conditions have led to a bumper crop. Food prices are plummeting on Earth and agricultural colonies.",
+      "category": "economic",
+      "duration_min": 4,
+      "duration_max": 8,
+      "weight": 0.9,
+      "effects": {
+        "planets": ["earth", "ganymede"],
+        "commodities": ["food"],
+        "price_modifier": 0.6,
+        "stock_modifier": 2.0,
+        "travel_time_modifier": 1.0,
+        "access_blocked": false,
+        "event_chance_modifier": 1.0
+      },
+      "conditions": {
+        "min_day": 1,
+        "max_concurrent": 1
+      }
+    },
+    {
+      "id": "jupiter_blockade",
+      "headline": "Corporate Blockade at Jupiter!",
+      "description": "A megacorp dispute has led to travel restrictions around Jupiter. Expect delays when traveling to Jupiter and its moons.",
+      "category": "political",
+      "duration_min": 3,
+      "duration_max": 6,
+      "weight": 0.6,
+      "effects": {
+        "planets": ["jupiter", "europa", "ganymede"],
+        "commodities": "*",
+        "price_modifier": 1.0,
+        "stock_modifier": 1.0,
+        "travel_time_modifier": 1.5,
+        "access_blocked": false,
+        "event_chance_modifier": 1.5
+      },
+      "conditions": {
+        "min_day": 10,
+        "max_concurrent": 1
+      }
+    },
+    {
+      "id": "titan_lockdown",
+      "headline": "Research Quarantine on Titan",
+      "description": "Biological containment protocols have sealed Titan Research Base. No ships may dock until the quarantine is lifted.",
+      "category": "political",
+      "duration_min": 2,
+      "duration_max": 4,
+      "weight": 0.4,
+      "effects": {
+        "planets": ["titan"],
+        "commodities": "*",
+        "price_modifier": 1.0,
+        "stock_modifier": 1.0,
+        "travel_time_modifier": 1.0,
+        "access_blocked": true,
+        "event_chance_modifier": 1.0
+      },
+      "conditions": {
+        "min_day": 15,
+        "max_concurrent": 1
+      }
+    },
+    {
+      "id": "solar_storm",
+      "headline": "Major Solar Storm Warning!",
+      "description": "Intense solar activity is disrupting inner system travel. Mercury, Venus, and Earth routes are experiencing hazardous conditions.",
+      "category": "natural",
+      "duration_min": 2,
+      "duration_max": 5,
+      "weight": 0.7,
+      "effects": {
+        "planets": ["mercury", "venus", "earth"],
+        "commodities": "*",
+        "price_modifier": 1.0,
+        "stock_modifier": 1.0,
+        "travel_time_modifier": 1.3,
+        "access_blocked": false,
+        "event_chance_modifier": 2.0
+      },
+      "conditions": {
+        "min_day": 1,
+        "max_concurrent": 1
+      }
+    },
+    {
+      "id": "medicine_crisis",
+      "headline": "Outbreak Reported in Outer Colonies!",
+      "description": "A viral outbreak is spreading through outer system stations. Medical supplies are in desperate demand at remote outposts.",
+      "category": "economic",
+      "duration_min": 5,
+      "duration_max": 10,
+      "weight": 0.6,
+      "effects": {
+        "planets": ["titan", "europa", "neptune", "pluto"],
+        "commodities": ["medicine"],
+        "price_modifier": 2.5,
+        "stock_modifier": 0.2,
+        "travel_time_modifier": 1.0,
+        "access_blocked": false,
+        "event_chance_modifier": 1.0
+      },
+      "conditions": {
+        "min_day": 20,
+        "max_concurrent": 1
+      }
+    },
+    {
+      "id": "luxury_demand",
+      "headline": "Colonial Anniversary Celebrations!",
+      "description": "The 50th anniversary of Mars colonization has sparked demand for luxury goods throughout the entire solar system.",
+      "category": "economic",
+      "duration_min": 7,
+      "duration_max": 14,
+      "weight": 0.5,
+      "effects": {
+        "planets": "*",
+        "commodities": ["luxury"],
+        "price_modifier": 1.4,
+        "stock_modifier": 0.7,
+        "travel_time_modifier": 1.0,
+        "access_blocked": false,
+        "event_chance_modifier": 1.0
+      },
+      "conditions": {
+        "min_day": 10,
+        "max_concurrent": 1
+      }
+    },
+    {
+      "id": "pirate_activity",
+      "headline": "Pirate Activity in the Belt!",
+      "description": "Increased pirate sightings near Ceres and the asteroid belt. Traders are advised to travel with extreme caution.",
+      "category": "political",
+      "duration_min": 4,
+      "duration_max": 8,
+      "weight": 0.7,
+      "effects": {
+        "planets": ["ceres", "mars", "jupiter"],
+        "commodities": "*",
+        "price_modifier": 1.0,
+        "stock_modifier": 0.8,
+        "travel_time_modifier": 1.2,
+        "access_blocked": false,
+        "event_chance_modifier": 2.5
+      },
+      "conditions": {
+        "min_day": 10,
+        "max_concurrent": 1
+      }
+    },
+    {
+      "id": "fuel_glut",
+      "headline": "Fuel Cell Overproduction at Jupiter",
+      "description": "New harvesting methods have created a massive fuel surplus in the outer system. Prices are dropping dramatically.",
+      "category": "economic",
+      "duration_min": 6,
+      "duration_max": 12,
+      "weight": 0.6,
+      "effects": {
+        "planets": ["jupiter", "europa", "neptune"],
+        "commodities": ["fuel_cells"],
+        "price_modifier": 0.5,
+        "stock_modifier": 2.5,
+        "travel_time_modifier": 1.0,
+        "access_blocked": false,
+        "event_chance_modifier": 1.0
+      },
+      "conditions": {
+        "min_day": 5,
+        "max_concurrent": 1
+      }
+    }
+  ]
+}
