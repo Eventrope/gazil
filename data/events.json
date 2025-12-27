@@ -1,0 +1,281 @@
+{
+  "events": [
+    {
+      "id": "pirate_ambush",
+      "name": "Pirate Ambush!",
+      "description": "A pirate vessel decloaks off your starboard bow. They're demanding tribute or they'll take it by force.",
+      "trigger": "travel",
+      "weight": 1.0,
+      "type": "bad",
+      "conditions": {
+        "min_cargo_value": 200
+      },
+      "choices": [
+        {
+          "text": "Pay the tribute (lose 20% of credits)",
+          "outcome": {
+            "credits_percent": -0.2,
+            "message": "You transfer the credits. The pirates salute mockingly and warp away."
+          }
+        },
+        {
+          "text": "Try to outrun them",
+          "success_chance": 0.4,
+          "outcome_success": {
+            "message": "Full power to engines! You barely escape their tractor beam."
+          },
+          "outcome_failure": {
+            "cargo_percent": -0.5,
+            "message": "They catch you and ransack your cargo hold. Half your goods are gone."
+          }
+        }
+      ]
+    },
+    {
+      "id": "cargo_salvage",
+      "name": "Floating Salvage",
+      "description": "Your sensors detect debris from a destroyed freighter. There might be salvageable cargo.",
+      "trigger": "travel",
+      "weight": 0.8,
+      "type": "good",
+      "conditions": {},
+      "choices": [
+        {
+          "text": "Investigate the wreckage",
+          "success_chance": 0.7,
+          "outcome_success": {
+            "random_cargo": {"min": 5, "max": 15},
+            "message": "Jackpot! You haul in some valuable salvage."
+          },
+          "outcome_failure": {
+            "fuel": -5,
+            "message": "Nothing but junk. You wasted fuel searching through debris."
+          }
+        },
+        {
+          "text": "Too risky, keep moving",
+          "outcome": {
+            "message": "Better safe than sorry. You continue on your way."
+          }
+        }
+      ]
+    },
+    {
+      "id": "distress_signal",
+      "name": "Distress Signal",
+      "description": "A weak distress signal reaches your ship. Someone's stranded out there.",
+      "trigger": "travel",
+      "weight": 0.7,
+      "type": "neutral",
+      "conditions": {},
+      "choices": [
+        {
+          "text": "Respond to the signal",
+          "success_chance": 0.6,
+          "outcome_success": {
+            "credits": 500,
+            "message": "You rescue a wealthy merchant who rewards you handsomely!"
+          },
+          "outcome_failure": {
+            "credits": -200,
+            "message": "It was a trap! Pirates ambush you and steal your credits."
+          }
+        },
+        {
+          "text": "Ignore it and continue",
+          "outcome": {
+            "message": "You feel a pang of guilt, but space is dangerous. You fly on."
+          }
+        }
+      ]
+    },
+    {
+      "id": "fuel_leak",
+      "name": "Fuel Leak!",
+      "description": "Warning lights flash! You've got a fuel leak in the main tank.",
+      "trigger": "travel",
+      "weight": 0.6,
+      "type": "bad",
+      "conditions": {},
+      "choices": [
+        {
+          "text": "Emergency patch (risky but free)",
+          "success_chance": 0.5,
+          "outcome_success": {
+            "message": "You manage to seal the leak with duct tape and prayers."
+          },
+          "outcome_failure": {
+            "fuel": -15,
+            "message": "The patch fails. You lose a lot of fuel before sealing it properly."
+          }
+        },
+        {
+          "text": "Use repair supplies (costs 100 credits)",
+          "outcome": {
+            "credits": -100,
+            "message": "You use proper repair materials. The leak is sealed safely."
+          }
+        }
+      ]
+    },
+    {
+      "id": "merchant_convoy",
+      "name": "Merchant Convoy",
+      "description": "You encounter a friendly merchant convoy. They're willing to trade at favorable rates.",
+      "trigger": "travel",
+      "weight": 0.5,
+      "type": "good",
+      "conditions": {},
+      "choices": [
+        {
+          "text": "Trade with them (sell cargo at +30%)",
+          "outcome": {
+            "sell_bonus": 0.3,
+            "message": "You make some excellent deals with the convoy merchants."
+          }
+        },
+        {
+          "text": "Just exchange pleasantries",
+          "outcome": {
+            "message": "You share news and coordinates. They wave as they pass."
+          }
+        }
+      ]
+    },
+    {
+      "id": "space_storm",
+      "name": "Ion Storm",
+      "description": "A sudden ion storm engulfs your ship! Systems are going haywire.",
+      "trigger": "travel",
+      "weight": 0.7,
+      "type": "bad",
+      "conditions": {},
+      "choices": [
+        {
+          "text": "Power through it",
+          "success_chance": 0.5,
+          "outcome_success": {
+            "message": "Your ship holds together. You emerge on the other side safely."
+          },
+          "outcome_failure": {
+            "credits": -150,
+            "fuel": -5,
+            "message": "Systems damaged! You spend credits and fuel on emergency repairs."
+          }
+        },
+        {
+          "text": "Take the long way around",
+          "outcome": {
+            "fuel": -8,
+            "message": "You detour around the storm, burning extra fuel."
+          }
+        }
+      ]
+    },
+    {
+      "id": "hidden_cache",
+      "name": "Hidden Cache",
+      "description": "Your scanner picks up an anomaly on a nearby asteroid. Could be a smuggler's cache!",
+      "trigger": "travel",
+      "weight": 0.4,
+      "type": "good",
+      "conditions": {},
+      "choices": [
+        {
+          "text": "Investigate the asteroid",
+          "success_chance": 0.6,
+          "outcome_success": {
+            "credits": 800,
+            "message": "You find a hidden stash of credits! Someone will miss this..."
+          },
+          "outcome_failure": {
+            "fuel": -10,
+            "message": "Nothing but rocks. Wasted trip."
+          }
+        },
+        {
+          "text": "Not worth the detour",
+          "outcome": {
+            "message": "You mark the coordinates and continue on. Maybe later."
+          }
+        }
+      ]
+    },
+    {
+      "id": "customs_patrol",
+      "name": "Customs Patrol",
+      "description": "A government patrol vessel is hailing you for a routine inspection.",
+      "trigger": "travel",
+      "weight": 0.6,
+      "type": "neutral",
+      "conditions": {},
+      "choices": [
+        {
+          "text": "Submit to inspection",
+          "outcome": {
+            "message": "They scan your cargo and find everything in order. You're cleared to proceed."
+          }
+        },
+        {
+          "text": "Attempt to evade",
+          "success_chance": 0.3,
+          "outcome_success": {
+            "message": "You slip into an asteroid field and lose them. That was close!"
+          },
+          "outcome_failure": {
+            "credits": -500,
+            "message": "They catch you and fine you heavily for evading inspection."
+          }
+        }
+      ]
+    },
+    {
+      "id": "lucky_star",
+      "name": "Lucky Star",
+      "description": "You pass through the tail of a comet. Spacers say it brings good luck!",
+      "trigger": "travel",
+      "weight": 0.3,
+      "type": "good",
+      "conditions": {},
+      "choices": [
+        {
+          "text": "Make a wish",
+          "outcome": {
+            "credits": 200,
+            "message": "You find a credit chip stuck in your ventilation system. Lucky indeed!"
+          }
+        }
+      ]
+    },
+    {
+      "id": "engine_trouble",
+      "name": "Engine Trouble",
+      "description": "Your engine starts making concerning noises. Something's not right.",
+      "trigger": "travel",
+      "weight": 0.5,
+      "type": "bad",
+      "conditions": {},
+      "choices": [
+        {
+          "text": "Limp to destination (risk further damage)",
+          "success_chance": 0.6,
+          "outcome_success": {
+            "message": "You make it, barely. The engine will need maintenance soon."
+          },
+          "outcome_failure": {
+            "fuel": -20,
+            "credits": -300,
+            "message": "The engine fails catastrophically! Emergency repairs drain your resources."
+          }
+        },
+        {
+          "text": "Stop and fix it now (-200 credits)",
+          "outcome": {
+            "credits": -200,
+            "message": "You spend time and money on proper repairs. Ship's running smooth now."
+          }
+        }
+      ]
+    }
+  ]
+}

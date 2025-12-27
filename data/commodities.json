@@ -1,0 +1,52 @@
+{
+  "commodities": [
+    {
+      "id": "food",
+      "name": "Food Supplies",
+      "base_price": 50,
+      "weight_per_unit": 2,
+      "legality": "legal",
+      "description": "Basic rations and preserved goods. Everyone needs to eat."
+    },
+    {
+      "id": "ore",
+      "name": "Raw Ore",
+      "base_price": 30,
+      "weight_per_unit": 5,
+      "legality": "legal",
+      "description": "Unprocessed minerals for manufacturing. Heavy but cheap."
+    },
+    {
+      "id": "tech",
+      "name": "Tech Components",
+      "base_price": 150,
+      "weight_per_unit": 1,
+      "legality": "legal",
+      "description": "Advanced electronics and machinery parts. Light and valuable."
+    },
+    {
+      "id": "luxury",
+      "name": "Luxury Goods",
+      "base_price": 300,
+      "weight_per_unit": 2,
+      "legality": "legal",
+      "description": "Fine wines, jewelry, and entertainment. The colonies crave comfort."
+    },
+    {
+      "id": "fuel_cells",
+      "name": "Fuel Cells",
+      "base_price": 80,
+      "weight_per_unit": 3,
+      "legality": "legal",
+      "description": "Portable energy storage. Essential for ships and stations."
+    },
+    {
+      "id": "medicine",
+      "name": "Medical Supplies",
+      "base_price": 200,
+      "weight_per_unit": 1,
+      "legality": "legal",
+      "description": "Pharmaceuticals and medical equipment. Always in demand."
+    }
+  ]
+}

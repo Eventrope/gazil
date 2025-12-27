@@ -1,0 +1,64 @@
+# Godot-specific ignores
+.godot/
+*.tmp
+*.translation
+*.pot
+*.po
+*.mo
+
+# Imported translations (comment out these two lines if you wish to ignore changes to imported translations)
+# *.import
+
+# Mono-specific (for C# projects, uncomment if using C#)
+# .mono/
+# data_*/
+# mono_crash.*.json
+
+# System Files
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# IDE - VSCode
+.vscode/
+
+# IDE - JetBrains Rider
+.idea/
+
+# IDE - Visual Studio / Visual Studio Code
+.vs/
+
+# Builds
+*.exe
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# Exported files
+export_presets.cfg
+export/
+
+# Logs
+*.log
+
+# User-specific files
+user://
+

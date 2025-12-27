@@ -1,0 +1,12 @@
+{
+  "ships": [
+    {
+      "id": "rustbucket",
+      "name": "Rustbucket Mk1",
+      "description": "Your trusty starter ship. It's seen better days, but it flies.",
+      "cargo_capacity": 100,
+      "fuel_capacity": 50,
+      "fuel_efficiency": 1.0
+    }
+  ]
+}

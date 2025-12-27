@@ -1,0 +1,109 @@
+{
+  "planets": [
+    {
+      "id": "earth",
+      "name": "Earth",
+      "description": "Humanity's homeworld. Balanced prices, a safe place to start your trading career.",
+      "distance_from": {
+        "mars": 2,
+        "venus": 1,
+        "jupiter": 5,
+        "saturn": 8,
+        "titan": 9
+      },
+      "price_modifiers": {
+        "food": 1.0,
+        "ore": 1.2,
+        "tech": 0.8,
+        "luxury": 1.0,
+        "fuel_cells": 1.0,
+        "medicine": 1.0
+      },
+      "supply_volatility": 0.1
+    },
+    {
+      "id": "mars",
+      "name": "Mars Colony",
+      "description": "Industrial mining hub. Cheap ore, but food is scarce and expensive.",
+      "distance_from": {
+        "earth": 2,
+        "venus": 3,
+        "jupiter": 4,
+        "saturn": 6,
+        "titan": 7
+      },
+      "price_modifiers": {
+        "food": 1.8,
+        "ore": 0.5,
+        "tech": 1.1,
+        "luxury": 1.3,
+        "fuel_cells": 0.9,
+        "medicine": 1.4
+      },
+      "supply_volatility": 0.15
+    },
+    {
+      "id": "venus",
+      "name": "Venus Station",
+      "description": "Floating cloud cities. A hub for luxury goods and high technology.",
+      "distance_from": {
+        "earth": 1,
+        "mars": 3,
+        "jupiter": 6,
+        "saturn": 9,
+        "titan": 10
+      },
+      "price_modifiers": {
+        "food": 1.3,
+        "ore": 1.5,
+        "tech": 0.6,
+        "luxury": 0.7,
+        "fuel_cells": 1.2,
+        "medicine": 0.9
+      },
+      "supply_volatility": 0.12
+    },
+    {
+      "id": "jupiter",
+      "name": "Jupiter Orbital",
+      "description": "Massive fuel harvesting station. Fuel cells are dirt cheap here.",
+      "distance_from": {
+        "earth": 5,
+        "mars": 4,
+        "venus": 6,
+        "saturn": 3,
+        "titan": 4
+      },
+      "price_modifiers": {
+        "food": 1.5,
+        "ore": 1.1,
+        "tech": 1.2,
+        "luxury": 1.6,
+        "fuel_cells": 0.4,
+        "medicine": 1.3
+      },
+      "supply_volatility": 0.18
+    },
+    {
+      "id": "titan",
+      "name": "Titan Research Base",
+      "description": "Remote scientific outpost. High demand for everything, but medicine sells well.",
+      "distance_from": {
+        "earth": 9,
+        "mars": 7,
+        "venus": 10,
+        "jupiter": 4,
+        "saturn": 1
+      },
+      "price_modifiers": {
+        "food": 2.0,
+        "ore": 1.4,
+        "tech": 1.3,
+        "luxury": 1.8,
+        "fuel_cells": 1.1,
+        "medicine": 2.2
+      },
+      "supply_volatility": 0.25
+    }
+  ]
+}
