@@ -67,6 +67,51 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Your Ship: Rustbucket Mk1"
 
+[node name="DesignPanel" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipStats"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DesignTitle" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "Ship Design"
+
+[node name="DesignDescription" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+text = "A rugged hull ready for upgrades."
+autowrap_mode = 2
+
+[node name="DesignStats" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="EngineDesignLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel/DesignStats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Engine: Standard"
+
+[node name="CargoDesignLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel/DesignStats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Cargo: Basic racks"
+
+[node name="FuelDesignLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel/DesignStats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Fuel: Standard tank"
+
+[node name="ModOptionsLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "Modification Options"
+
+[node name="ModOptionsList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
 [node name="StatsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipStats"]
 layout_mode = 2
 theme_override_constants/separation = 8

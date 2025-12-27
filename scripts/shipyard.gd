@@ -4,6 +4,11 @@ const BASE_FUEL_PRICE := 5
 
 @onready var credits_label: Label = $MarginContainer/VBoxContainer/Header/CreditsLabel
 @onready var ship_title: Label = $MarginContainer/VBoxContainer/ContentContainer/ShipStats/ShipTitle
+@onready var design_description: Label = $MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel/DesignDescription
+@onready var engine_design_label: Label = $MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel/DesignStats/EngineDesignLabel
+@onready var cargo_design_label: Label = $MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel/DesignStats/CargoDesignLabel
+@onready var fuel_design_label: Label = $MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel/DesignStats/FuelDesignLabel
+@onready var mod_options_list: VBoxContainer = $MarginContainer/VBoxContainer/ContentContainer/ShipStats/DesignPanel/ModOptionsList
 @onready var cargo_stat: Label = $MarginContainer/VBoxContainer/ContentContainer/ShipStats/StatsContainer/CargoStat
 @onready var fuel_cap_stat: Label = $MarginContainer/VBoxContainer/ContentContainer/ShipStats/StatsContainer/FuelCapStat
 @onready var efficiency_stat: Label = $MarginContainer/VBoxContainer/ContentContainer/ShipStats/StatsContainer/EfficiencyStat
@@ -22,13 +27,63 @@ func _update_display() -> void:
 	credits_label.text = "Credits: %s" % _format_number(player.credits)
 
 	ship_title.text = "Your Ship: %s" % ship.ship_name
+	design_description.text = ship.description
 	cargo_stat.text = "Cargo Capacity: %d tonnes" % ship.cargo_tonnes
 	fuel_cap_stat.text = "Fuel Tank: %d (Current: %d)" % [ship.fuel_tank, player.fuel]
 	efficiency_stat.text = "Fuel Burn: %.1f per distance" % ship.fuel_burn_per_distance
 
+	_update_design_overview()
 	_update_installed_list()
 	_update_upgrade_list()
 	_update_refuel_button()
+
+func _update_design_overview() -> void:
+	for child in mod_options_list.get_children():
+		child.queue_free()
+
+	var ship := GameState.player.ship
+	engine_design_label.text = "Engine: %.1f burn/ly" % ship.fuel_burn_per_distance
+	cargo_design_label.text = "Cargo: %d tonnes max" % ship.cargo_tonnes
+	fuel_design_label.text = "Fuel: %d tank capacity" % ship.fuel_tank
+
+	var categorized := _get_modification_categories()
+	for category in categorized:
+		var entry := categorized[category]
+		var label := Label.new()
+		label.text = "%s: %s" % [category, entry]
+		label.add_theme_font_size_override("font_size", 15)
+		mod_options_list.add_child(label)
+
+func _get_modification_categories() -> Dictionary:
+	var ship := GameState.player.ship
+	var result: Dictionary = {
+		"Engine": [],
+		"Cargo": [],
+		"Fuel": []
+	}
+	for upgrade in DataRepo.get_all_upgrades():
+		var effects: Dictionary = upgrade.get("effects", {})
+		var upgrade_name: String = upgrade.get("name", "Unknown")
+		var upgrade_cost: int = upgrade.get("cost", 0)
+		var status := "Available"
+		if ship.has_upgrade(upgrade.get("id", "")):
+			status = "Installed"
+		var entry := "%s (%s, %d cr)" % [upgrade_name, status, upgrade_cost]
+		if effects.has("fuel_burn_modifier"):
+			result["Engine"].append(entry)
+		if effects.has("cargo_tonnes"):
+			result["Cargo"].append(entry)
+		if effects.has("fuel_tank"):
+			result["Fuel"].append(entry)
+
+	var formatted: Dictionary = {}
+	for category in result:
+		var options: Array = result[category]
+		if options.is_empty():
+			formatted[category] = "No upgrades yet"
+		else:
+			formatted[category] = ", ".join(options)
+	return formatted
 
 func _update_installed_list() -> void:
 	for child in installed_list.get_children():
