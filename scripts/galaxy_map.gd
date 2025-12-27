@@ -60,7 +60,7 @@ func _format_number(num: int) -> String:
 		result = str_num[i] + result
 		count += 1
 	return result
-
+"MEEROPA"
 func _clear_selection() -> void:
 	selected_planet_id = ""
 	planet_name.text = "Select a Destination"
