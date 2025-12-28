@@ -48,8 +48,8 @@ func _update_design_overview() -> void:
 
 	var categorized := _get_modification_categories()
 	for category in categorized:
-		var entry := categorized[category]
-		var label := Label.new()
+		var entry: String = str(categorized[category])
+		var label: Label = Label.new()
 		label.text = "%s: %s" % [category, entry]
 		label.add_theme_font_size_override("font_size", 15)
 		mod_options_list.add_child(label)
@@ -68,7 +68,7 @@ func _get_modification_categories() -> Dictionary:
 		var status := "Available"
 		if ship.has_upgrade(upgrade.get("id", "")):
 			status = "Installed"
-		var entry := "%s (%s, %d cr)" % [upgrade_name, status, upgrade_cost]
+		var entry: String = "%s (%s, %d cr)" % [upgrade_name, status, upgrade_cost]
 		if effects.has("fuel_burn_modifier"):
 			result["Engine"].append(entry)
 		if effects.has("cargo_tonnes"):
