@@ -1,0 +1,157 @@
+[gd_scene load_steps=2 format=3 uid="uid://passenger_lounge"]
+
+[ext_resource type="Script" path="res://scripts/passenger_lounge.gd" id="1_lounge"]
+
+[node name="PassengerLounge" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lounge")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.06, 0.1, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.7, 0.5, 0.9, 1)
+text = "PASSENGER LOUNGE"
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CreditsLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Credits: 1,000"
+
+[node name="ReputationLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Reputation: 50"
+
+[node name="BerthsLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.3, 0.9, 0.3, 1)
+text = "Berths: 0/4"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ContentContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="AvailablePanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/AvailablePanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="AvailableTitle" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/AvailablePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.5, 0.8, 0.5, 1)
+text = "AVAILABLE PASSENGERS"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/ContentContainer/AvailablePanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer/ContentContainer/AvailablePanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AvailableList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/AvailablePanel/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="RefreshButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/AvailablePanel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+theme_override_font_sizes/font_size = 14
+text = "Check for New Passengers"
+
+[node name="AcceptedPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/AcceptedPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="AcceptedTitle" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/AcceptedPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.5, 0.6, 0.9, 1)
+text = "PASSENGERS ABOARD"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/ContentContainer/AcceptedPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer/ContentContainer/AcceptedPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AcceptedList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/AcceptedPanel/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Footer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="MessageLabel" type="Label" parent="MarginContainer/VBoxContainer/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = ""
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/Footer"]
+layout_mode = 2
+custom_minimum_size = Vector2(150, 45)
+theme_override_font_sizes/font_size = 18
+text = "Back to Map"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ContentContainer/AvailablePanel/VBoxContainer/RefreshButton" to="." method="_on_refresh_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Footer/BackButton" to="." method="_on_back_pressed"]

@@ -9,6 +9,8 @@ var news_event_templates: Array = []  # Raw template data for news events
 var upgrades: Dictionary = {}  # {id: Dictionary}
 var ships: Dictionary = {}  # {id: Dictionary}
 var ship_traits: Dictionary = {}  # {id: Dictionary}
+var investment_types: Dictionary = {}  # {id: Dictionary}
+var crew_roles: Dictionary = {}  # {id: Dictionary}
 
 var _loaded := false
 
@@ -23,10 +25,12 @@ func _load_all_data() -> void:
 	_load_upgrades()
 	_load_ships()
 	_load_ship_traits()
+	_load_investments()
+	_load_crew_roles()
 	_loaded = true
-	print("DataRepo: Loaded %d planets, %d commodities, %d events, %d news events, %d upgrades, %d ships, %d traits" % [
+	print("DataRepo: Loaded %d planets, %d commodities, %d events, %d news events, %d upgrades, %d ships, %d traits, %d investments, %d crew roles" % [
 		planets.size(), commodities.size(), events.size(), news_event_templates.size(),
-		upgrades.size(), ships.size(), ship_traits.size()
+		upgrades.size(), ships.size(), ship_traits.size(), investment_types.size(), crew_roles.size()
 	])
 
 func _load_json(path: String) -> Variant:
@@ -96,6 +100,20 @@ func _load_ship_traits() -> void:
 		return
 	for trait_data in data["ship_traits"]:
 		ship_traits[trait_data["id"]] = trait_data
+
+func _load_investments() -> void:
+	var data = _load_json("res://data/investments.json")
+	if data == null or not data.has("investment_types"):
+		return
+	for inv_data in data["investment_types"]:
+		investment_types[inv_data["id"]] = inv_data
+
+func _load_crew_roles() -> void:
+	var data = _load_json("res://data/crew_roles.json")
+	if data == null or not data.has("crew_roles"):
+		return
+	for role_data in data["crew_roles"]:
+		crew_roles[role_data["id"]] = role_data
 
 # --- Public API ---
 
@@ -180,6 +198,63 @@ func get_commodity_weight(commodity_id: String) -> int:
 		return commodity.weight_per_unit
 	return 2  # Default weight
 
+func get_commodity_price_range(commodity_id: String) -> Dictionary:
+	# Returns {min_price: int, max_price: int, min_planet: String, max_planet: String}
+	# Based on base price × planet modifiers only (no drift/stock/news effects)
+	var commodity := get_commodity(commodity_id)
+	if commodity == null:
+		return {"min_price": 0, "max_price": 0, "min_planet": "", "max_planet": ""}
+
+	var min_price := 999999
+	var max_price := 0
+	var min_planet := ""
+	var max_planet := ""
+
+	for planet in planets.values():
+		var modifier: float = planet.get_price_modifier(commodity_id)
+		var price: int = int(round(commodity.base_price * modifier))
+		if price < min_price:
+			min_price = price
+			min_planet = planet.planet_name
+		if price > max_price:
+			max_price = price
+			max_planet = planet.planet_name
+
+	return {
+		"min_price": min_price,
+		"max_price": max_price,
+		"min_planet": min_planet,
+		"max_planet": max_planet
+	}
+
+func get_price_quality(current_price: int, commodity_id: String) -> Dictionary:
+	# Returns how good/bad a price is relative to galaxy-wide range
+	# quality: 0.0 (cheapest) to 1.0 (most expensive)
+	# rating: "excellent", "good", "fair", "poor", "terrible"
+	var range_data := get_commodity_price_range(commodity_id)
+	var min_p: int = range_data["min_price"]
+	var max_p: int = range_data["max_price"]
+
+	if max_p <= min_p:
+		return {"quality": 0.5, "rating": "fair"}
+
+	var quality: float = float(current_price - min_p) / float(max_p - min_p)
+	quality = clampf(quality, 0.0, 1.0)
+
+	var rating: String
+	if quality <= 0.15:
+		rating = "excellent"
+	elif quality <= 0.35:
+		rating = "good"
+	elif quality <= 0.65:
+		rating = "fair"
+	elif quality <= 0.85:
+		rating = "poor"
+	else:
+		rating = "terrible"
+
+	return {"quality": quality, "rating": rating}
+
 func get_news_event_templates() -> Array:
 	return news_event_templates
 
@@ -196,3 +271,15 @@ func get_locked_planets(current_day: int) -> Array:
 		if not planet.is_unlocked(current_day):
 			locked.append(planet)
 	return locked
+
+func get_investment_type(id: String) -> Dictionary:
+	return investment_types.get(id, {})
+
+func get_all_investment_types() -> Array:
+	return investment_types.values()
+
+func get_crew_role(id: String) -> Dictionary:
+	return crew_roles.get(id, {})
+
+func get_all_crew_roles() -> Array:
+	return crew_roles.values()

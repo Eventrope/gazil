@@ -3,7 +3,11 @@ extends Node
 # GameState - Manages current game session and persistence
 
 const SAVE_PATH := "user://savegame.json"
-const SAVE_VERSION := 3
+const SAVE_VERSION := 4  # v4: Added banking, passengers, investments, crew
+
+const SAVINGS_INTEREST_RATE := 0.002  # 0.2% per day
+const BASE_LOAN_RATE := 0.01  # 1% per day
+const LOAN_DURATION_DAYS := 30
 
 var player: Player = null
 var price_drifts: Dictionary = {}  # {planet_id: {commodity_id: float}}
@@ -17,6 +21,11 @@ signal day_advanced(new_day: int)
 signal player_traveled(from_planet: String, to_planet: String)
 signal news_event_started(event: NewsEvent)
 signal news_event_ended(event: NewsEvent)
+signal bank_interest_applied(savings_interest: int, loan_interest: int)
+signal loan_overdue(loan: Dictionary, days_overdue: int)
+signal ship_breakdown(severity: String)  # minor, major, critical
+signal investment_matured(investment: Investment, payout: int)
+signal crew_quit(member: CrewMember)
 
 func _ready() -> void:
 	pass
@@ -94,6 +103,9 @@ func advance_day(days: int = 1) -> void:
 	_drift_prices()
 	_regenerate_stocks(days)
 	_process_news_events()
+	_process_banking(days)
+	_process_crew_wages(days)
+	_process_investments()
 	day_advanced.emit(player.day)
 
 func _drift_prices() -> void:
@@ -144,6 +156,139 @@ func _process_news_events() -> void:
 		active_news_events.append(result["new_event"])
 		news_event_started.emit(result["new_event"])
 
+func _process_banking(days: int) -> void:
+	if player == null:
+		return
+
+	var savings_interest := 0
+	var loan_interest := 0
+
+	# Apply savings interest
+	if player.bank_balance > 0:
+		for _i in range(days):
+			var interest := int(player.bank_balance * SAVINGS_INTEREST_RATE)
+			player.bank_balance += interest
+			savings_interest += interest
+
+	# Apply loan interest and check overdue
+	for loan in player.loans:
+		for _i in range(days):
+			var interest := int(loan["amount_owed"] * loan.get("interest_rate", BASE_LOAN_RATE))
+			loan["amount_owed"] += interest
+			loan_interest += interest
+
+		# Check if overdue
+		var days_overdue: int = player.day - loan.get("due_day", 0)
+		if days_overdue > 0:
+			loan_overdue.emit(loan, days_overdue)
+			# Penalize credit rating for overdue loans
+			if days_overdue == 7 or days_overdue == 14 or days_overdue == 21:
+				player.credit_rating = maxi(0, player.credit_rating - 10)
+
+	if savings_interest > 0 or loan_interest > 0:
+		bank_interest_applied.emit(savings_interest, loan_interest)
+
+func _process_crew_wages(days: int) -> void:
+	if player == null or player.crew.is_empty():
+		return
+
+	var total_wages := 0
+	var quitters: Array = []
+
+	# Process each crew member
+	for i in range(player.crew.size() - 1, -1, -1):
+		var crew_data = player.crew[i]
+		var member: CrewMember
+
+		if crew_data is Dictionary:
+			member = CrewMember.from_dict(crew_data)
+		else:
+			member = crew_data
+
+		var wage := member.get_daily_wage() * days
+		total_wages += wage
+
+		if player.credits >= wage:
+			player.spend_credits(wage)
+			member.pay_wage_success()
+		else:
+			# Can't pay - morale drops
+			member.pay_wage_failure()
+
+		# Check if quitting
+		if member.is_quitting():
+			crew_quit.emit(member)
+			quitters.append(i)
+		else:
+			# Update stored data
+			if crew_data is Dictionary:
+				player.crew[i] = member.to_dict()
+			else:
+				player.crew[i] = member
+
+	# Remove quitters (in reverse order)
+	for idx in quitters:
+		player.crew.remove_at(idx)
+
+func _process_investments() -> void:
+	if player == null:
+		return
+
+	var matured: Array = []
+	for i in range(player.investments.size() - 1, -1, -1):
+		var inv_data = player.investments[i]
+		var inv: Investment
+
+		if inv_data is Dictionary:
+			inv = Investment.from_dict(inv_data)
+		else:
+			inv = inv_data
+
+		if inv.is_matured(player.day):
+			var payout := inv.get_payout()
+			player.add_credits(payout)
+			investment_matured.emit(inv, payout)
+			matured.append(i)
+
+	# Remove matured investments (in reverse order)
+	for idx in matured:
+		player.investments.remove_at(idx)
+
+func _check_breakdown() -> Dictionary:
+	# Check if ship breaks down based on current reliability
+	if player == null or player.ship == null:
+		return {"occurred": false}
+
+	var breakdown_chance := player.ship.get_breakdown_chance()
+	if breakdown_chance <= 0.0:
+		return {"occurred": false}
+
+	if randf() > breakdown_chance:
+		return {"occurred": false}
+
+	# Breakdown occurred! Determine severity
+	var severity: String
+	var extra_days: int
+	var roll := randf()
+
+	if roll < 0.6:
+		severity = "minor"
+		extra_days = randi_range(1, 2)
+	elif roll < 0.9:
+		severity = "major"
+		extra_days = randi_range(2, 4)
+	else:
+		severity = "critical"
+		extra_days = randi_range(4, 7)
+
+	ship_breakdown.emit(severity)
+
+	return {
+		"occurred": true,
+		"severity": severity,
+		"extra_days": extra_days
+	}
+
 func travel_to(planet_id: String) -> Dictionary:
 	# Returns {success: bool, message: String, event: GameEvent or null}
 	if player == null:
@@ -180,27 +325,53 @@ func travel_to(planet_id: String) -> Dictionary:
 	# Consume fuel
 	player.use_fuel(fuel_cost)
 
+	# Degrade ship reliability from travel
+	player.ship.degrade_reliability(distance)
+
+	# Check for breakdown
+	var breakdown_result := _check_breakdown()
+
 	# Move player
 	var from_planet := player.current_planet
-	player.travel_to(planet_id, distance)
+	var extra_days: int = breakdown_result.get("extra_days", 0)
+	player.travel_to(planet_id, distance + extra_days)
 
 	# Advance time
 	_drift_prices()
 
 	player_traveled.emit(from_planet, planet_id)
 
+	# Process passenger mood effects from travel
+	var breakdown_occurred: bool = breakdown_result.get("occurred", false)
+	var breakdown_severity: String = breakdown_result.get("severity", "")
+	PassengerManager.process_travel_effects(player, distance + extra_days, breakdown_occurred, breakdown_severity)
+
+	# Check for passenger deliveries at destination
+	var deliveries := PassengerManager.deliver_passengers(player, planet_id, player.day)
+
 	# Check for random event (with news modifier for increased danger)
 	var event_chance_modifier := NewsManager.get_event_chance_modifier(active_news_events, from_planet, planet_id)
 	var event := EventManager.roll_event("travel", event_chance_modifier)
 
-	var travel_msg := "Traveled to %s (-%d fuel, %d days)" % [destination.planet_name, fuel_cost, distance]
+	var travel_msg := "Traveled to %s (-%d fuel, %d days)" % [destination.planet_name, fuel_cost, distance + extra_days]
 	if travel_modifier > 1.0:
 		travel_msg += " [Delayed by events]"
+	if breakdown_result.get("occurred", false):
+		travel_msg += " [%s breakdown: +%d days]" % [breakdown_result["severity"], extra_days]
+
+	# Add passenger delivery info
+	if not deliveries.is_empty():
+		var total_payment := 0
+		for delivery in deliveries:
+			total_payment += delivery["payment"]
+		travel_msg += " [Delivered %d passengers: +%d cr]" % [deliveries.size(), total_payment]
 
 	return {
 		"success": true,
 		"message": travel_msg,
-		"event": event
+		"event": event,
+		"breakdown": breakdown_result,
+		"deliveries": deliveries
 	}
 
 func buy_commodity(commodity_id: String, quantity: int) -> Dictionary:
@@ -285,6 +456,126 @@ func buy_upgrade(upgrade_id: String) -> Dictionary:
 	player.ship.apply_upgrade(upgrade)
 
 	return {"success": true, "message": "Installed %s" % upgrade.get("name", upgrade_id)}
+
+func hire_crew(role_id: String, quality: int) -> Dictionary:
+	if player == null:
+		return {"success": false, "message": "No active game"}
+
+	var role_data := DataRepo.get_crew_role(role_id)
+	if role_data.is_empty():
+		return {"success": false, "message": "Unknown role"}
+
+	# Check ship min_crew limit
+	var max_crew := player.ship.min_crew + 3  # Can have up to 3 more than minimum
+	if player.crew.size() >= max_crew:
+		return {"success": false, "message": "Maximum crew reached (%d)" % max_crew}
+
+	# Hiring cost based on quality
+	var base_wage: int = role_data.get("base_wage", 20)
+	var hiring_cost := base_wage * quality * 5  # 5 days wages upfront
+
+	if player.credits < hiring_cost:
+		return {"success": false, "message": "Not enough credits (need %d)" % hiring_cost}
+
+	player.spend_credits(hiring_cost)
+	var member := CrewMember.create(role_data, quality, player.day)
+	player.crew.append(member.to_dict())
+
+	return {
+		"success": true,
+		"message": "Hired %s as %s (%d cr)" % [member.crew_name, role_data.get("name", role_id), hiring_cost],
+		"member": member
+	}
+
+func fire_crew(index: int) -> Dictionary:
+	if player == null:
+		return {"success": false, "message": "No active game"}
+
+	if index < 0 or index >= player.crew.size():
+		return {"success": false, "message": "Invalid crew member"}
+
+	var crew_data = player.crew[index]
+	var member: CrewMember
+	if crew_data is Dictionary:
+		member = CrewMember.from_dict(crew_data)
+	else:
+		member = crew_data
+
+	# Check if this would put us below minimum crew
+	if player.crew.size() <= player.ship.min_crew:
+		return {"success": false, "message": "Cannot go below minimum crew (%d)" % player.ship.min_crew}
+
+	player.crew.remove_at(index)
+
+	return {
+		"success": true,
+		"message": "Released %s from duty" % member.crew_name
+	}
+
+func buy_investment(type_id: String, amount: int) -> Dictionary:
+	if player == null:
+		return {"success": false, "message": "No active game"}
+
+	var type_data := DataRepo.get_investment_type(type_id)
+	if type_data.is_empty():
+		return {"success": false, "message": "Unknown investment type"}
+
+	var min_inv: int = type_data.get("min_investment", 100)
+	var max_inv: int = type_data.get("max_investment", 10000)
+
+	if amount < min_inv:
+		return {"success": false, "message": "Minimum investment: %d cr" % min_inv}
+	if amount > max_inv:
+		return {"success": false, "message": "Maximum investment: %d cr" % max_inv}
+	if player.credits < amount:
+		return {"success": false, "message": "Not enough credits"}
+
+	# Max 5 concurrent investments
+	if player.investments.size() >= 5:
+		return {"success": false, "message": "Maximum 5 active investments"}
+
+	player.spend_credits(amount)
+	var investment := Investment.create(type_data, amount, player.day)
+	player.investments.append(investment.to_dict())
+
+	var type_name: String = type_data.get("name", "Investment")
+	return {
+		"success": true,
+		"message": "Invested %d cr in %s" % [amount, type_name],
+		"investment": investment
+	}
+
+func repair_ship(amount: int) -> Dictionary:
+	if player == null or player.ship == null:
+		return {"success": false, "message": "No active game"}
+
+	var ship := player.ship
+	var need_repair := ship.reliability - ship.current_reliability
+	if need_repair <= 0:
+		return {"success": false, "message": "Ship is already at full reliability"}
+
+	var to_repair := mini(amount, need_repair)
+	var cost_per_point := ship.get_repair_cost_per_point()
+
+	# TODO: Apply cheap_repairs trait here when implemented
+	var total_cost := to_repair * cost_per_point
+
+	if player.credits < total_cost:
+		# Repair what we can afford
+		to_repair = player.credits / cost_per_point
+		if to_repair <= 0:
+			return {"success": false, "message": "Not enough credits for repairs"}
+		total_cost = to_repair * cost_per_point
+
+	player.spend_credits(total_cost)
+	var repaired := ship.repair(to_repair)
+
+	return {
+		"success": true,
+		"message": "Repaired %d points for %d credits" % [repaired, total_cost],
+		"repaired": repaired,
+		"cost": total_cost
+	}
 
 func check_game_over() -> Dictionary:
 	# Returns {game_over: bool, won: bool, reason: String}

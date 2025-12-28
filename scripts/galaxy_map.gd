@@ -12,7 +12,7 @@ extends Control
 @onready var distance_label: Label = $MarginContainer/VBoxContainer/MainContent/RightPanel/TravelInfo/DistanceLabel
 @onready var fuel_cost_label: Label = $MarginContainer/VBoxContainer/MainContent/RightPanel/TravelInfo/FuelCostLabel
 @onready var travel_time_label: Label = $MarginContainer/VBoxContainer/MainContent/RightPanel/TravelInfo/TravelTimeLabel
-@onready var travel_button: Button = $MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonRow/TravelButton
+@onready var travel_button: Button = $MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonContainer/ButtonRow1/TravelButton
 @onready var message_label: Label = $MarginContainer/VBoxContainer/MessageLabel
 
 var selected_planet_id: String = ""
@@ -197,6 +197,18 @@ func _on_market_pressed() -> void:
 
 func _on_shipyard_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/shipyard.tscn")
+
+func _on_bank_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/bank.tscn")
+
+func _on_passengers_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/passenger_lounge.tscn")
+
+func _on_invest_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/investment_office.tscn")
+
+func _on_crew_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/crew_quarters.tscn")
 
 func _on_main_menu_pressed() -> void:
 	GameState.return_to_main_menu()

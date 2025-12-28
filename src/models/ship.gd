@@ -33,6 +33,7 @@ var trait_id: String
 # Runtime State (modified during gameplay)
 var upgrades_installed: Array[String]
 var modules_installed: Array[String]
+var current_reliability: int  # Degrades with travel, can be repaired
 
 func _init(data: Dictionary = {}) -> void:
 	if data.is_empty():
@@ -70,6 +71,7 @@ func _init(data: Dictionary = {}) -> void:
 	# Runtime state
 	upgrades_installed = []
 	modules_installed = []
+	current_reliability = reliability  # Start at max reliability
 
 func apply_upgrade(upgrade_data: Dictionary) -> void:
 	var effects: Dictionary = upgrade_data.get("effects", {})
@@ -95,6 +97,31 @@ func get_fuel_cost(distance: int) -> int:
 func get_module_slots_free() -> int:
 	return module_slots_total - modules_installed.size()
 
+func degrade_reliability(distance: int) -> void:
+	# Reliability degrades with travel: 1 point per 2 distance
+	# Automation reduces wear
+	var wear := int(ceil(float(distance) / 2.0))
+	if automation_level > 0:
+		wear = int(ceil(float(wear) * (1.0 - automation_level * 0.15)))
+	current_reliability = maxi(0, current_reliability - wear)
+
+func repair(amount: int) -> int:
+	# Returns actual amount repaired
+	var can_repair := reliability - current_reliability
+	var actual := mini(amount, can_repair)
+	current_reliability += actual
+	return actual
+
+func get_repair_cost_per_point() -> int:
+	# Base 50 cr per point, could be modified by traits
+	return 50
+
+func get_breakdown_chance() -> float:
+	# Below 50% reliability, chance of breakdown increases
+	if current_reliability >= 50:
+		return 0.0
+	return (50.0 - current_reliability) / 100.0  # Max 50% at 0 reliability
+
 func to_dict() -> Dictionary:
 	return {
 		"id": id,
@@ -113,11 +140,14 @@ func to_dict() -> Dictionary:
 		"module_slots_total": module_slots_total,
 		"trait_id": trait_id,
 		"upgrades_installed": upgrades_installed,
-		"modules_installed": modules_installed
+		"modules_installed": modules_installed,
+		"current_reliability": current_reliability
 	}
 
 static func from_dict(data: Dictionary) -> Ship:
 	var ship := Ship.new(data)
 	ship.upgrades_installed.assign(data.get("upgrades_installed", []))
 	ship.modules_installed.assign(data.get("modules_installed", []))
+	# Load current reliability, default to max if not saved (old saves)
+	ship.current_reliability = data.get("current_reliability", ship.reliability)
 	return ship

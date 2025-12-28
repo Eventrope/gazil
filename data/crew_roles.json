@@ -1,0 +1,58 @@
+{
+  "crew_roles": [
+    {
+      "id": "pilot",
+      "name": "Pilot",
+      "description": "Skilled navigator who reduces travel time",
+      "base_wage": 25,
+      "effects": {
+        "travel_time_reduction": 0.1
+      }
+    },
+    {
+      "id": "engineer",
+      "name": "Engineer",
+      "description": "Keeps the ship running, reduces reliability decay",
+      "base_wage": 30,
+      "effects": {
+        "reliability_decay_reduction": 0.2
+      }
+    },
+    {
+      "id": "navigator",
+      "name": "Navigator",
+      "description": "Expert at finding efficient routes, reduces fuel consumption",
+      "base_wage": 25,
+      "effects": {
+        "fuel_consumption_reduction": 0.15
+      }
+    },
+    {
+      "id": "cargo_master",
+      "name": "Cargo Master",
+      "description": "Optimizes cargo storage, increases capacity",
+      "base_wage": 20,
+      "effects": {
+        "cargo_bonus": 5
+      }
+    },
+    {
+      "id": "steward",
+      "name": "Steward",
+      "description": "Keeps passengers happy, improves mood retention",
+      "base_wage": 20,
+      "effects": {
+        "passenger_mood_bonus": 10
+      }
+    },
+    {
+      "id": "medic",
+      "name": "Medic",
+      "description": "Reduces event damage and crew injuries",
+      "base_wage": 35,
+      "effects": {
+        "event_damage_reduction": 0.25
+      }
+    }
+  ]
+}
