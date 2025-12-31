@@ -3,7 +3,7 @@ extends Node
 # GameState - Manages current game session and persistence
 
 const SAVE_PATH := "user://savegame.json"
-const SAVE_VERSION := 4  # v4: Added banking, passengers, investments, crew
+const SAVE_VERSION := 5  # v5: Added corporations, contracts, sealed cargo
 
 const SAVINGS_INTEREST_RATE := 0.002  # 0.2% per day
 const BASE_LOAN_RATE := 0.01  # 1% per day
@@ -35,6 +35,11 @@ signal investment_matured(investment: Investment, payout: int)
 signal crew_quit(member: CrewMember)
 signal bots_processed(actions: Array)  # Bot actions during player travel
 signal competition_ended(player_rank: int, player_won: bool)
+signal contracts_refreshed(contracts: Array)  # When contracts refresh on planet arrival
+signal contract_completed(contract: Contract, reward: int)
+signal contract_failed(contract: Contract, penalty: int)
+signal embargo_violation_detected(contract: Contract, fine: int)
+signal sealed_cargo_contraband_found(cargo: SealedCargo, fine: int)
 
 func _ready() -> void:
 	pass
@@ -481,6 +486,40 @@ func travel_to(planet_id: String) -> Dictionary:
 	# Check for contraband inspection at destination
 	var inspection_result := _check_contraband_inspection(destination)
 
+	# Check sealed cargo for contraband during inspection
+	var sealed_cargo_inspection := {"found": false}
+	if inspection_result.get("inspected", false):
+		sealed_cargo_inspection = CorporationManager.inspect_sealed_cargo(player, destination)
+		if sealed_cargo_inspection.get("found", false):
+			var fine: int = sealed_cargo_inspection.get("fine", 0)
+			if player.credits >= fine:
+				player.spend_credits(fine)
+			else:
+				player.spend_credits(player.credits)
+			for cargo in sealed_cargo_inspection.get("cargo", []):
+				sealed_cargo_contraband_found.emit(cargo, fine)
+
+	# Check for expired contracts
+	var expired_contracts := CorporationManager.check_expired_contracts(player, player.day)
+	for expired in expired_contracts:
+		contract_failed.emit(expired, expired.penalty)
+
+	# Check for cargo haul contract completion at destination
+	var completed_contracts: Array = []
+	for contract_data in player.active_contracts:
+		var contract := Contract.from_dict(contract_data)
+		if contract.status == Contract.Status.ACCEPTED:
+			if CorporationManager.check_contract_completion(player, contract_data):
+				var result := CorporationManager.complete_contract(player, contract)
+				if result.get("success", false):
+					completed_contracts.append(contract)
+					contract_completed.emit(contract, contract.reward)
+
+	# Generate new contracts at destination
+	var new_contracts := CorporationManager.generate_contracts_for_planet(planet_id, player.day, player)
+	if not new_contracts.is_empty():
+		contracts_refreshed.emit(new_contracts)
+
 	var travel_msg := "Traveled to %s (-%d fuel, %d days)" % [destination.planet_name, fuel_cost, distance + extra_days]
 	if travel_modifier > 1.0:
 		travel_msg += " [Delayed by events]"
@@ -494,6 +533,17 @@ func travel_to(planet_id: String) -> Dictionary:
 			total_payment += delivery["payment"]
 		travel_msg += " [Delivered %d passengers: +%d cr]" % [deliveries.size(), total_payment]
 
+	# Add contract completion info
+	if not completed_contracts.is_empty():
+		var total_reward := 0
+		for c in completed_contracts:
+			total_reward += c.reward
+		travel_msg += " [Completed %d contracts: +%d cr]" % [completed_contracts.size(), total_reward]
+
+	# Add sealed cargo contraband info
+	if sealed_cargo_inspection.get("found", false):
+		travel_msg += " [Sealed cargo inspected: contraband found, %d cr fine]" % sealed_cargo_inspection.get("fine", 0)
+
 	return {
 		"success": true,
 		"message": travel_msg,
@@ -501,7 +551,11 @@ func travel_to(planet_id: String) -> Dictionary:
 		"breakdown": breakdown_result,
 		"deliveries": deliveries,
 		"bot_actions": bot_actions,
-		"inspection": inspection_result
+		"inspection": inspection_result,
+		"completed_contracts": completed_contracts,
+		"expired_contracts": expired_contracts,
+		"new_contracts": new_contracts,
+		"sealed_cargo_inspection": sealed_cargo_inspection
 	}
 
 func buy_commodity(commodity_id: String, quantity: int) -> Dictionary:
@@ -555,6 +609,21 @@ func sell_commodity(commodity_id: String, quantity: int) -> Dictionary:
 	var cost_basis := purchase_price * quantity
 	var profit := total_value - cost_basis
 
+	# Check for embargo violations
+	var embargo_result := CorporationManager.check_embargo_violation(player, commodity_id, player.current_planet)
+	var embargo_detected := false
+	var embargo_fine := 0
+	if embargo_result.get("violated", false):
+		var detection_chance: float = embargo_result.get("detection_chance", 0.5)
+		if randf() < detection_chance:
+			embargo_detected = true
+			var contract: Contract = embargo_result.get("contract")
+			if contract:
+				# Fail the embargo contract
+				embargo_fine = contract.penalty
+				CorporationManager.fail_contract(player, contract, "Embargo violation detected")
+				embargo_violation_detected.emit(contract, embargo_fine)
+
 	player.remove_cargo(commodity_id, quantity)
 	player.add_credits(total_value)
 	player.statistics["trades_made"] += 1
@@ -569,7 +638,18 @@ func sell_commodity(commodity_id: String, quantity: int) -> Dictionary:
 	elif profit < 0:
 		profit_str = " (%d loss)" % profit
 
-	return {"success": true, "message": "Sold %d %s for %d credits%s" % [quantity, commodity.commodity_name, total_value, profit_str], "profit": profit}
+	var result := {
+		"success": true,
+		"message": "Sold %d %s for %d credits%s" % [quantity, commodity.commodity_name, total_value, profit_str],
+		"profit": profit,
+		"embargo_detected": embargo_detected,
+		"embargo_fine": embargo_fine
+	}
+
+	if embargo_detected:
+		result["message"] += " [EMBARGO VIOLATION: -%d cr penalty]" % embargo_fine
+
+	return result
 
 func buy_upgrade(upgrade_id: String) -> Dictionary:
 	if player == null:
@@ -807,7 +887,9 @@ func save_game() -> bool:
 		"difficulty": difficulty,
 		"game_length": game_length,
 		"debug_bots": debug_bots,
-		"bots": BotManager.to_dict() if competition_mode else {}
+		"bots": BotManager.to_dict() if competition_mode else {},
+		# Corporation data
+		"corporation_data": CorporationManager.get_save_data(player)
 	}
 
 	var json_string := JSON.stringify(save_data, "\t")
@@ -866,6 +948,10 @@ func load_game() -> bool:
 	if competition_mode and save_data.has("bots"):
 		BotManager.from_dict(save_data.get("bots", {}))
 		BotManager.debug_mode = debug_bots
+
+	# Restore corporation data
+	if save_data.has("corporation_data"):
+		CorporationManager.load_save_data(save_data.get("corporation_data", {}), player)
 
 	is_game_active = true
 

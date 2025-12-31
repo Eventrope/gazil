@@ -30,6 +30,27 @@ var count: int = array.size() - other_array.size()
 - Strongly-typed function returns: `var player := GameState.player`
 - Constructor calls: `var vec := Vector2(0, 0)`
 
+**Method Return Type Issues:**
+When a custom method returns a type that could be inferred as Variant, use explicit types:
+```gdscript
+# BAD - Method may return Variant-typed value
+var standing := CorporationManager.get_standing(player, corp_id)
+var presence := corp.get_presence_level(planet_id)
+var result := contract.can_accept(ship, standing)
+
+# GOOD - Use explicit type annotations
+var standing: int = CorporationManager.get_standing(player, corp_id)
+var presence: String = corp.get_presence_level(planet_id)
+var result: Dictionary = contract.can_accept(ship, standing)
+```
+
+**Common patterns needing explicit types:**
+- Manager methods: `CorporationManager.get_standing()` → `: int`
+- Model methods: `contract.can_accept()` → `: Dictionary`
+- Get methods: `corp.get_presence_level()` → `: String`
+- Enum methods: Any method returning enum values
+- Dictionary/Array operations
+
 ## Godot CLI
 
 Executable: `/Applications/Godot.app/Contents/MacOS/Godot`
@@ -82,5 +103,45 @@ Executable: `/Applications/Godot.app/Contents/MacOS/Godot`
 - **Contraband inspection**: inspection_chance per planet, surrender or flee mechanics
 - **Destination profit estimates**: Galaxy map shows cargo profit at each destination
 
-### Contract System (Pending)
-- Basic delivery contracts planned but not yet implemented
+### Corporation & Contract System
+
+8 corporations with planet presence and contract offerings:
+
+| Corp | Abbrev | Archetype | Home Planet | Specialty |
+|------|--------|-----------|-------------|-----------|
+| Martian Mining Consortium | MMC | Mining | Mars | Ore, Parts |
+| Mercury Extraction Corp | MEC | Mining | Mercury | Ore, Parts |
+| Europa Research Initiative | ERI | Research | Europa | Tech, Medicine, Artifacts |
+| Venus Luxury Holdings | VLH | Leisure | Venus | Entertainment, Luxury |
+| Jovian Fuel Authority | JFA | Gas Giant | Jupiter | Fuel |
+| Ganymede Agricultural Trust | GAT | Agricultural | Ganymede | Grain |
+| Terran Transit Alliance | TTA | Crossroads | Earth | Multi-commodity |
+| Shadow Syndicate | SS | Smuggler | Ceres | Contraband |
+
+**Contract Types:**
+- `cargo_haul` - Move goods from A to B (sealed or player-sourced)
+- `supply_run` - Deliver goods to corp facility
+- `embargo` - Avoid selling specific goods to rival planets
+- `manipulation` - Affect prices/stock at target planet
+- `vip_transport` - Transport corporate VIPs
+
+**Standing System:**
+- Range: 0-100, starts at 50
+- 80+: Trusted (better payouts, priority over bots)
+- 50-79: Neutral (standard access)
+- 20-49: Low (fewer contracts)
+- 0-19: Hostile (only recovery contracts)
+
+**Key Files:**
+- `src/models/corporation.gd` - Corporation data model
+- `src/models/contract.gd` - Contract with Type/Tier/Status enums
+- `src/models/sealed_cargo.gd` - Sealed cargo container
+- `src/autoload/corporation_manager.gd` - Central manager
+- `data/corporations.json` - Corp and contract template data
+- `scripts/corporation_office.gd` - UI for contracts
+
+**Sealed Cargo:**
+- Fully opaque - player doesn't know contents
+- May contain contraband (inspection risk)
+- Cannot be opened, only delivered or discarded
+- Weight counts toward cargo capacity

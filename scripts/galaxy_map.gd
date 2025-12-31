@@ -326,18 +326,11 @@ func _on_invest_pressed() -> void:
 func _on_crew_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/crew_quarters.tscn")
 
-func _on_main_menu_pressed() -> void:
-	GameState.return_to_main_menu()
-	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+func _on_contracts_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/corporation_office.tscn")
 
 func _on_news_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/galactic_news.tscn")
-
-func _on_save_pressed() -> void:
-	if GameState.save_game():
-		_show_message("Game saved!", Color(0.4, 0.8, 0.4))
-	else:
-		_show_message("Failed to save game", Color(0.9, 0.3, 0.3))
 
 func _show_message(text: String, color: Color) -> void:
 	message_label.text = text

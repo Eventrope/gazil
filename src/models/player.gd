@@ -25,6 +25,11 @@ var investments: Array = []  # Array of Investment objects
 # Crew System
 var crew: Array = []  # Array of CrewMember objects
 
+# Corporation System
+var corp_standings: Dictionary = {}  # {corp_id: int (0-100)}
+var active_contracts: Array = []  # Array of Contract dictionaries
+var sealed_cargo: Array = []  # Array of SealedCargo dictionaries
+
 signal credits_changed(new_amount: int)
 signal fuel_changed(new_amount: int)
 signal cargo_changed()
@@ -61,7 +66,13 @@ func get_cargo_weight() -> int:
 	return total
 
 func get_cargo_space_used() -> int:
-	return get_cargo_weight()
+	return get_cargo_weight() + get_sealed_cargo_weight()
+
+func get_sealed_cargo_weight() -> int:
+	var total := 0
+	for cargo_data in sealed_cargo:
+		total += cargo_data.get("weight", 0)
+	return total
 
 func get_cargo_space_free() -> int:
 	if ship == null:
@@ -313,7 +324,11 @@ func to_dict() -> Dictionary:
 		# Investments
 		"investments": investments_data,
 		# Crew
-		"crew": crew_data
+		"crew": crew_data,
+		# Corporations
+		"corp_standings": corp_standings.duplicate(),
+		"active_contracts": active_contracts.duplicate(true),
+		"sealed_cargo": sealed_cargo.duplicate(true)
 	}
 
 static func from_dict(data: Dictionary) -> Player:
@@ -342,5 +357,10 @@ static func from_dict(data: Dictionary) -> Player:
 
 	# Crew (v4+)
 	player.crew = data.get("crew", [])
+
+	# Corporations (v5+)
+	player.corp_standings = data.get("corp_standings", {})
+	player.active_contracts = data.get("active_contracts", [])
+	player.sealed_cargo = data.get("sealed_cargo", [])
 
 	return player
