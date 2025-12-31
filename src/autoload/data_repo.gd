@@ -11,6 +11,7 @@ var ships: Dictionary = {}  # {id: Dictionary}
 var ship_traits: Dictionary = {}  # {id: Dictionary}
 var investment_types: Dictionary = {}  # {id: Dictionary}
 var crew_roles: Dictionary = {}  # {id: Dictionary}
+var bot_data: Dictionary = {}  # Bot definitions and templates
 
 var _loaded := false
 
@@ -27,10 +28,12 @@ func _load_all_data() -> void:
 	_load_ship_traits()
 	_load_investments()
 	_load_crew_roles()
+	_load_bots()
 	_loaded = true
-	print("DataRepo: Loaded %d planets, %d commodities, %d events, %d news events, %d upgrades, %d ships, %d traits, %d investments, %d crew roles" % [
+	print("DataRepo: Loaded %d planets, %d commodities, %d events, %d news events, %d upgrades, %d ships, %d traits, %d investments, %d crew roles, %d bots" % [
 		planets.size(), commodities.size(), events.size(), news_event_templates.size(),
-		upgrades.size(), ships.size(), ship_traits.size(), investment_types.size(), crew_roles.size()
+		upgrades.size(), ships.size(), ship_traits.size(), investment_types.size(), crew_roles.size(),
+		bot_data.get("bots", []).size()
 	])
 
 func _load_json(path: String) -> Variant:
@@ -114,6 +117,12 @@ func _load_crew_roles() -> void:
 		return
 	for role_data in data["crew_roles"]:
 		crew_roles[role_data["id"]] = role_data
+
+func _load_bots() -> void:
+	var data = _load_json("res://data/bots.json")
+	if data == null:
+		return
+	bot_data = data
 
 # --- Public API ---
 
@@ -283,3 +292,22 @@ func get_crew_role(id: String) -> Dictionary:
 
 func get_all_crew_roles() -> Array:
 	return crew_roles.values()
+
+# --- Bot API ---
+
+func get_all_bots() -> Array:
+	return bot_data.get("bots", [])
+
+func get_bot_by_id(id: String) -> Dictionary:
+	for bot in bot_data.get("bots", []):
+		if bot.get("id") == id:
+			return bot
+	return {}
+
+func get_personality_modifiers(personality: String) -> Dictionary:
+	var modifiers: Dictionary = bot_data.get("personality_modifiers", {})
+	return modifiers.get(personality, {})
+
+func get_bot_news_templates(news_type: String) -> Array:
+	var templates: Dictionary = bot_data.get("news_templates", {})
+	return templates.get(news_type, [])

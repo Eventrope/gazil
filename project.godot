@@ -24,6 +24,7 @@ NewsManager="*res://src/autoload/news_manager.gd"
 GameState="*res://src/autoload/game_state.gd"
 EventManager="*res://src/autoload/event_manager.gd"
 PassengerManager="*res://src/autoload/passenger_manager.gd"
+BotManager="*res://src/autoload/bot_manager.gd"
 
 [display]
 

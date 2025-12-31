@@ -15,6 +15,13 @@ var planet_stocks: Dictionary = {}  # {planet_id: {commodity_id: int}}
 var active_news_events: Array = []  # Array of NewsEvent
 var is_game_active := false
 
+# Competition mode settings
+var competition_mode := false
+var bot_count := 5
+var difficulty := "medium"
+var game_length := 200  # Days until game ends
+var debug_bots := false
+
 signal game_started()
 signal game_ended(won: bool)
 signal day_advanced(new_day: int)
@@ -26,17 +33,25 @@ signal loan_overdue(loan: Dictionary, days_overdue: int)
 signal ship_breakdown(severity: String)  # minor, major, critical
 signal investment_matured(investment: Investment, payout: int)
 signal crew_quit(member: CrewMember)
+signal bots_processed(actions: Array)  # Bot actions during player travel
+signal competition_ended(player_rank: int, player_won: bool)
 
 func _ready() -> void:
 	pass
 
 # Called when user clicks "New Game" - prepares world state before ship selection
-func start_new_game() -> void:
+func start_new_game(enable_competition: bool = false, num_bots: int = 5, game_difficulty: String = "medium", days: int = 200) -> void:
 	player = null
 	_init_price_drifts()
 	_init_planet_stocks()
 	active_news_events.clear()
 	is_game_active = false
+
+	# Competition mode settings
+	competition_mode = enable_competition
+	bot_count = num_bots
+	difficulty = game_difficulty
+	game_length = days
 
 # Called after player selects their ship - finalizes game start
 func finalize_new_game(ship_id: String) -> void:
@@ -47,6 +62,13 @@ func finalize_new_game(ship_id: String) -> void:
 		return
 	player.fuel = player.ship.fuel_tank
 	is_game_active = true
+
+	# Initialize bots if in competition mode
+	if competition_mode:
+		BotManager.initialize_bots(bot_count, difficulty)
+		BotManager.debug_mode = debug_bots
+		print("GameState: Competition mode enabled with %d bots at %s difficulty" % [bot_count, difficulty])
+
 	game_started.emit()
 	print("GameState: New game started with ship: " + ship_id)
 
@@ -339,6 +361,12 @@ func travel_to(planet_id: String) -> Dictionary:
 	# Advance time
 	_drift_prices()
 
+	# Process bot turns during player travel (competition mode)
+	var bot_actions := []
+	if competition_mode:
+		bot_actions = BotManager.process_bot_turns(distance + extra_days)
+		bots_processed.emit(bot_actions)
+
 	player_traveled.emit(from_planet, planet_id)
 
 	# Process passenger mood effects from travel
@@ -371,7 +399,8 @@ func travel_to(planet_id: String) -> Dictionary:
 		"message": travel_msg,
 		"event": event,
 		"breakdown": breakdown_result,
-		"deliveries": deliveries
+		"deliveries": deliveries,
+		"bot_actions": bot_actions
 	}
 
 func buy_commodity(commodity_id: String, quantity: int) -> Dictionary:
@@ -578,26 +607,48 @@ func repair_ship(amount: int) -> Dictionary:
 	}
 
 func check_game_over() -> Dictionary:
-	# Returns {game_over: bool, won: bool, reason: String}
+	# Returns {game_over: bool, won: bool, reason: String, rank: int}
 	if player == null:
-		return {"game_over": false, "won": false, "reason": ""}
+		return {"game_over": false, "won": false, "reason": "", "rank": 0}
 
-	if player.has_won():
-		is_game_active = false
-		game_ended.emit(true)
-		return {"game_over": true, "won": true, "reason": "You reached 100,000 credits!"}
-
+	# Check standard loss conditions first
 	if player.is_stranded():
 		is_game_active = false
 		game_ended.emit(false)
-		return {"game_over": true, "won": false, "reason": "You ran out of fuel and are stranded in space!"}
+		return {"game_over": true, "won": false, "reason": "You ran out of fuel and are stranded in space!", "rank": 0}
 
 	if player.is_bankrupt():
 		is_game_active = false
 		game_ended.emit(false)
-		return {"game_over": true, "won": false, "reason": "You went bankrupt!"}
+		return {"game_over": true, "won": false, "reason": "You went bankrupt!", "rank": 0}
 
-	return {"game_over": false, "won": false, "reason": ""}
+	# Competition mode: game ends after game_length days
+	if competition_mode:
+		if player.day >= game_length:
+			var leaderboard := BotManager.get_leaderboard()
+			var player_rank := 1
+			for entry in leaderboard:
+				if entry["is_player"]:
+					player_rank = entry["rank"]
+					break
+
+			var won := player_rank == 1
+			is_game_active = false
+			competition_ended.emit(player_rank, won)
+			game_ended.emit(won)
+
+			if won:
+				return {"game_over": true, "won": true, "reason": "You finished in 1st place!", "rank": 1}
+			else:
+				return {"game_over": true, "won": false, "reason": "Competition ended. You placed #%d" % player_rank, "rank": player_rank}
+	else:
+		# Classic mode: win at 100k
+		if player.has_won():
+			is_game_active = false
+			game_ended.emit(true)
+			return {"game_over": true, "won": true, "reason": "You reached 100,000 credits!", "rank": 1}
+
+	return {"game_over": false, "won": false, "reason": "", "rank": 0}
 
 # --- Stock and News Helper Functions ---
 
@@ -636,7 +687,14 @@ func save_game() -> bool:
 		"player": player.to_dict(),
 		"price_drifts": price_drifts,
 		"planet_stocks": planet_stocks,
-		"active_news_events": news_events_data
+		"active_news_events": news_events_data,
+		# Competition mode data
+		"competition_mode": competition_mode,
+		"bot_count": bot_count,
+		"difficulty": difficulty,
+		"game_length": game_length,
+		"debug_bots": debug_bots,
+		"bots": BotManager.to_dict() if competition_mode else {}
 	}
 
 	var json_string := JSON.stringify(save_data, "\t")
@@ -684,9 +742,21 @@ func load_game() -> bool:
 	for event_data in news_events_data:
 		active_news_events.append(NewsEvent.from_dict(event_data))
 
+	# Restore competition mode settings
+	competition_mode = save_data.get("competition_mode", false)
+	bot_count = save_data.get("bot_count", 5)
+	difficulty = save_data.get("difficulty", "medium")
+	game_length = save_data.get("game_length", 200)
+	debug_bots = save_data.get("debug_bots", false)
+
+	# Restore bot data
+	if competition_mode and save_data.has("bots"):
+		BotManager.from_dict(save_data.get("bots", {}))
+		BotManager.debug_mode = debug_bots
+
 	is_game_active = true
 
-	print("GameState: Game loaded")
+	print("GameState: Game loaded" + (" (competition mode)" if competition_mode else ""))
 	game_started.emit()
 	return true
 

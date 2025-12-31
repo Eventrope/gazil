@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3leaderboard"]
+
+[ext_resource type="Script" path="res://scripts/leaderboard_panel.gd" id="1_script"]
+
+[node name="LeaderboardPanel" type="PanelContainer"]
+custom_minimum_size = Vector2(250, 0)
+offset_right = 250.0
+offset_bottom = 200.0
+script = ExtResource("1_script")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "LEADERBOARD"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="EntriesContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CollapseButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Show All"
