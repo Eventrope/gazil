@@ -1,30 +1,98 @@
 extends Control
 
-@onready var title_label: Label = $MarginContainer/VBoxContainer/Header/TitleLabel
-@onready var credits_label: Label = $MarginContainer/VBoxContainer/Header/CreditsLabel
-@onready var cargo_label: Label = $MarginContainer/VBoxContainer/Header/CargoLabel
-@onready var commodity_list: VBoxContainer = $MarginContainer/VBoxContainer/ScrollContainer/CommodityList
-@onready var message_label: Label = $MarginContainer/VBoxContainer/Footer/MessageLabel
+# Left panel refs
+@onready var title_label: Label = $MarginContainer/MainLayout/LeftPanel/Header/TitleLabel
+@onready var day_label: Label = $MarginContainer/MainLayout/LeftPanel/Header/DayLabel
+@onready var commodity_list: VBoxContainer = $MarginContainer/MainLayout/LeftPanel/ScrollContainer/CommodityList
 
-# Trade panel refs (created dynamically)
-var trade_panel: PanelContainer = null
+# Right panel - Player info
+@onready var credits_label: Label = $MarginContainer/MainLayout/RightPanel/PlayerInfo/PlayerInfoContent/CreditsRow/CreditsLabel
+@onready var cargo_label: Label = $MarginContainer/MainLayout/RightPanel/PlayerInfo/PlayerInfoContent/CargoRow/CargoLabel
+
+# Right panel - Trade panel
+@onready var selected_name: Label = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/SelectedName
+@onready var selected_category: Label = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/SelectedCategory
+@onready var price_label: Label = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/PriceInfo/CurrentPriceRow/PriceLabel
+@onready var range_label: Label = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/PriceInfo/RangeRow/RangeLabel
+@onready var quantity_label: Label = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection/QuantityRow/QuantityLabel
+@onready var quantity_slider: HSlider = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection/QuantitySlider
+@onready var total_label: Label = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection/TotalRow/TotalLabel
+@onready var buy_btn: Button = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/BuyRow/BuyButton
+@onready var buy_max_btn: Button = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/BuyRow/BuyMaxButton
+@onready var sell_btn: Button = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/SellRow/SellButton
+@onready var sell_all_btn: Button = $MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/SellRow/SellAllButton
+@onready var message_label: Label = $MarginContainer/MainLayout/RightPanel/MessageLabel
+
+# State
 var selected_commodity: Commodity = null
-var quantity_slider: HSlider = null
-var quantity_label: Label = null
-var total_label: Label = null
-var trade_action_btn: Button = null
-var is_buying := true
+var selected_row: PanelContainer = null
+var commodity_rows: Dictionary = {}  # commodity_id -> PanelContainer
+
+# Colors
+const COLOR_ROW_NORMAL := Color(0.1, 0.11, 0.14, 1.0)
+const COLOR_ROW_HOVER := Color(0.14, 0.15, 0.19, 1.0)
+const COLOR_ROW_SELECTED := Color(0.18, 0.22, 0.32, 1.0)
+const COLOR_BORDER_SELECTED := Color(0.35, 0.5, 0.8, 1.0)
+const COLOR_TEXT_DIM := Color(0.5, 0.52, 0.58, 1.0)
+const COLOR_TEXT_NORMAL := Color(0.85, 0.87, 0.9, 1.0)
+const COLOR_PROFIT := Color(0.3, 0.9, 0.3, 1.0)
+const COLOR_LOSS := Color(0.9, 0.35, 0.35, 1.0)
 
 func _ready() -> void:
+	print("Market._ready() called")
+	
+	if GameState.player == null:
+		push_error("Market: GameState.player is null!")
+		return
+	
 	var planet := DataRepo.get_planet(GameState.player.current_planet)
+	if planet == null:
+		push_error("Market: Could not find planet: " + GameState.player.current_planet)
+		return
+	
 	title_label.text = "Market - %s" % planet.planet_name
-	_update_header()
+	day_label.text = "Day %d" % GameState.player.day
+	
+	_style_panels()
+	_update_player_info()
 	_build_commodity_rows()
+	_update_trade_panel()
+	
+	print("Market._ready() completed")
 
-func _update_header() -> void:
+func _style_panels() -> void:
+	# Style the player info panel
+	var player_panel: PanelContainer = $MarginContainer/MainLayout/RightPanel/PlayerInfo
+	var player_style := StyleBoxFlat.new()
+	player_style.bg_color = Color(0.1, 0.11, 0.14, 1.0)
+	player_style.corner_radius_top_left = 6
+	player_style.corner_radius_top_right = 6
+	player_style.corner_radius_bottom_left = 6
+	player_style.corner_radius_bottom_right = 6
+	player_style.content_margin_left = 14
+	player_style.content_margin_right = 14
+	player_style.content_margin_top = 12
+	player_style.content_margin_bottom = 12
+	player_panel.add_theme_stylebox_override("panel", player_style)
+	
+	# Style the trade panel
+	var trade_panel: PanelContainer = $MarginContainer/MainLayout/RightPanel/TradePanel
+	var trade_style := StyleBoxFlat.new()
+	trade_style.bg_color = Color(0.1, 0.11, 0.14, 1.0)
+	trade_style.corner_radius_top_left = 6
+	trade_style.corner_radius_top_right = 6
+	trade_style.corner_radius_bottom_left = 6
+	trade_style.corner_radius_bottom_right = 6
+	trade_style.content_margin_left = 14
+	trade_style.content_margin_right = 14
+	trade_style.content_margin_top = 12
+	trade_style.content_margin_bottom = 12
+	trade_panel.add_theme_stylebox_override("panel", trade_style)
+
+func _update_player_info() -> void:
 	var player := GameState.player
-	credits_label.text = "Credits: %s" % _format_number(player.credits)
-	cargo_label.text = "Cargo: %d/%d t" % [player.get_cargo_space_used(), player.ship.cargo_tonnes]
+	credits_label.text = "%s" % _format_number(player.credits)
+	cargo_label.text = "%d/%d t" % [player.get_cargo_space_used(), player.ship.cargo_tonnes]
 
 func _format_number(num: int) -> String:
 	var str_num := str(num)
@@ -38,213 +106,321 @@ func _format_number(num: int) -> String:
 	return result
 
 func _build_commodity_rows() -> void:
-	for child in commodity_list.get_children():
+	print("_build_commodity_rows() called")
+	
+	# Clear existing rows - use get_children() snapshot to avoid issues
+	var children := commodity_list.get_children()
+	for child in children:
+		commodity_list.remove_child(child)
 		child.queue_free()
-
+	commodity_rows.clear()
+	
 	var current_planet := GameState.player.current_planet
-
-	for commodity in DataRepo.get_all_commodities():
-		# Filter: only show commodities available at this planet
-		if not commodity.is_available_at(current_planet):
-			# Check if player owns some (still show for selling)
-			if GameState.player.get_cargo_quantity(commodity.id) == 0:
-				continue
-
+	var all_commodities := DataRepo.get_all_commodities()
+	print("Found %d commodities, current planet: %s" % [all_commodities.size(), current_planet])
+	
+	var added_count: int = 0
+	for commodity in all_commodities:
+		# Filter: only show commodities available at this planet or owned by player
+		var is_available: bool = commodity.is_available_at(current_planet)
+		var owned: int = GameState.player.get_cargo_quantity(commodity.id)
+		
+		if not is_available and owned == 0:
+			continue
+		
 		var row := _create_commodity_row(commodity)
 		commodity_list.add_child(row)
+		commodity_rows[commodity.id] = row
+		added_count += 1
+	
+	print("Added %d commodity rows to list (children count: %d)" % [added_count, commodity_list.get_child_count()])
 
 func _create_commodity_row(commodity: Commodity) -> PanelContainer:
 	var panel := PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.12, 0.16, 1.0)
+	style.bg_color = COLOR_ROW_NORMAL
 	style.corner_radius_top_left = 4
 	style.corner_radius_top_right = 4
 	style.corner_radius_bottom_left = 4
 	style.corner_radius_bottom_right = 4
 	style.content_margin_left = 12
 	style.content_margin_right = 12
-	style.content_margin_top = 8
-	style.content_margin_bottom = 8
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
 	panel.add_theme_stylebox_override("panel", style)
-
-	var current_planet := GameState.player.current_planet
-	var price := GameState.get_price_at(current_planet, commodity.id)
-	var owned := GameState.player.get_cargo_quantity(commodity.id)
-	var stock := GameState.get_stock_at(current_planet, commodity.id)
-	var planet := DataRepo.get_planet(current_planet)
-	var base_stock := planet.get_base_stock(commodity.id)
-	var purchase_price := GameState.player.get_purchase_price(commodity.id)
-	var is_available := commodity.is_available_at(current_planet)
-
-	var price_range := DataRepo.get_commodity_price_range(commodity.id)
-	var price_quality := DataRepo.get_price_quality(price, commodity.id)
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	panel.set_meta("commodity_id", commodity.id)
+	
+	# Connect mouse events
+	panel.gui_input.connect(_on_row_input.bind(panel, commodity))
+	panel.mouse_entered.connect(_on_row_hover.bind(panel, true))
+	panel.mouse_exited.connect(_on_row_hover.bind(panel, false))
+	
+	var current_planet: String = GameState.player.current_planet
+	var price: int = GameState.get_price_at(current_planet, commodity.id)
+	var owned: int = GameState.player.get_cargo_quantity(commodity.id)
+	var stock: int = GameState.get_stock_at(current_planet, commodity.id)
+	var planet: Planet = DataRepo.get_planet(current_planet)
+	var base_stock: int = planet.get_base_stock(commodity.id)
+	var purchase_price: int = GameState.player.get_purchase_price(commodity.id)
+	var is_available: bool = commodity.is_available_at(current_planet)
+	
+	var price_range: Dictionary = DataRepo.get_commodity_price_range(commodity.id)
+	var price_quality: Dictionary = DataRepo.get_price_quality(price, commodity.id)
 	var quality: float = price_quality["quality"]
-
+	
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 12)
-
-	# Name + Category column
+	row.add_theme_constant_override("separation", 0)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	# Name column
 	var name_col := VBoxContainer.new()
-	name_col.custom_minimum_size.x = 140
-	name_col.add_theme_constant_override("separation", 0)
-
+	name_col.custom_minimum_size.x = 160
+	name_col.add_theme_constant_override("separation", 1)
+	name_col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
 	var name_label := Label.new()
 	name_label.text = commodity.commodity_name
-	name_label.add_theme_font_size_override("font_size", 15)
+	name_label.add_theme_font_size_override("font_size", 14)
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if commodity.is_contraband():
-		name_label.add_theme_color_override("font_color", Color(0.9, 0.4, 0.4))
+		name_label.add_theme_color_override("font_color", Color(0.9, 0.45, 0.45))
+	else:
+		name_label.add_theme_color_override("font_color", COLOR_TEXT_NORMAL)
 	name_col.add_child(name_label)
-
+	
 	var cat_label := Label.new()
-	cat_label.text = "(%s)" % commodity.category
+	cat_label.text = commodity.category
 	cat_label.add_theme_font_size_override("font_size", 11)
-	cat_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+	cat_label.add_theme_color_override("font_color", COLOR_TEXT_DIM)
+	cat_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	name_col.add_child(cat_label)
-
+	
 	row.add_child(name_col)
-
-	# Price column with color and range
+	
+	# Price column
 	var price_col := VBoxContainer.new()
-	price_col.custom_minimum_size.x = 90
-	price_col.add_theme_constant_override("separation", 0)
-
+	price_col.custom_minimum_size.x = 100
+	price_col.add_theme_constant_override("separation", 1)
+	price_col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
 	var price_label := Label.new()
+	price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	price_label.add_theme_font_size_override("font_size", 14)
+	price_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
 	if is_available:
 		price_label.text = "%d cr" % price
-		var price_color := _get_quality_color(quality)
+		var price_color: Color = _get_quality_color(quality)
 		price_label.add_theme_color_override("font_color", price_color)
-
-		# Add news indicator
-		var news_effects := NewsManager.get_combined_effects(
+		
+		# News indicator
+		var news_effects: Dictionary = NewsManager.get_combined_effects(
 			GameState.get_active_news_events(), current_planet, commodity.id
 		)
 		if news_effects["price_modifier"] > 1.0:
-			price_label.text += " ^"
+			price_label.text += " ↑"
 		elif news_effects["price_modifier"] < 1.0:
-			price_label.text += " v"
+			price_label.text += " ↓"
 	else:
 		price_label.text = "N/A"
-		price_label.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4))
-
-	price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	price_label.add_theme_font_size_override("font_size", 15)
+		price_label.add_theme_color_override("font_color", COLOR_TEXT_DIM)
+	
 	price_col.add_child(price_label)
-
-	var range_label := Label.new()
-	range_label.text = "(%d-%d)" % [price_range["min_price"], price_range["max_price"]]
-	range_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	range_label.add_theme_font_size_override("font_size", 10)
-	range_label.add_theme_color_override("font_color", Color(0.45, 0.45, 0.5))
-	price_col.add_child(range_label)
-
+	
+	var min_price: int = price_range["min_price"]
+	var max_price: int = price_range["max_price"]
+	var range_str: String = "(%d-%d)" % [min_price, max_price]
+	var range_lbl := Label.new()
+	range_lbl.text = range_str
+	range_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	range_lbl.add_theme_font_size_override("font_size", 10)
+	range_lbl.add_theme_color_override("font_color", Color(0.4, 0.42, 0.48))
+	range_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	price_col.add_child(range_lbl)
+	
 	row.add_child(price_col)
-
-	# Owned column with profit indicator
+	
+	# Owned column
 	var owned_col := VBoxContainer.new()
-	owned_col.custom_minimum_size.x = 90
-	owned_col.add_theme_constant_override("separation", 0)
-
+	owned_col.custom_minimum_size.x = 100
+	owned_col.add_theme_constant_override("separation", 1)
+	owned_col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
 	var owned_label := Label.new()
 	owned_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	owned_label.add_theme_font_size_override("font_size", 15)
-
+	owned_label.add_theme_font_size_override("font_size", 14)
+	owned_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
 	if owned > 0:
 		owned_label.text = "%d" % owned
-		owned_label.add_theme_color_override("font_color", Color(0.4, 0.8, 0.4))
-
-		# Show profit/loss if selling now
+		owned_label.add_theme_color_override("font_color", Color(0.5, 0.85, 0.5))
+		owned_col.add_child(owned_label)
+		
+		# Profit/loss indicator
 		var profit_label := Label.new()
-		var potential_profit := (price - purchase_price) * owned
+		var potential_profit: int = (price - purchase_price) * owned
 		if potential_profit > 0:
 			profit_label.text = "+%d" % potential_profit
-			profit_label.add_theme_color_override("font_color", Color(0.3, 0.9, 0.3))
+			profit_label.add_theme_color_override("font_color", COLOR_PROFIT)
 		elif potential_profit < 0:
 			profit_label.text = "%d" % potential_profit
-			profit_label.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))
+			profit_label.add_theme_color_override("font_color", COLOR_LOSS)
 		else:
 			profit_label.text = "@%d" % purchase_price
-			profit_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+			profit_label.add_theme_color_override("font_color", COLOR_TEXT_DIM)
 		profit_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		profit_label.add_theme_font_size_override("font_size", 10)
-		owned_col.add_child(owned_label)
+		profit_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		owned_col.add_child(profit_label)
 	else:
-		owned_label.text = "-"
-		owned_label.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4))
+		owned_label.text = "—"
+		owned_label.add_theme_color_override("font_color", COLOR_TEXT_DIM)
 		owned_col.add_child(owned_label)
-
+	
 	row.add_child(owned_col)
-
+	
 	# Stock column
 	var stock_label := Label.new()
-	stock_label.custom_minimum_size.x = 55
+	stock_label.custom_minimum_size.x = 70
 	stock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	stock_label.add_theme_font_size_override("font_size", 15)
-
+	stock_label.add_theme_font_size_override("font_size", 14)
+	stock_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
 	if is_available:
 		stock_label.text = str(stock)
-		var stock_ratio: float = float(stock) / float(max(base_stock, 1))
+		var base_stock_float: float = float(base_stock)
+		var stock_ratio: float = float(stock) / max(base_stock_float, 1.0)
 		if stock_ratio > 0.7:
-			stock_label.add_theme_color_override("font_color", Color(0.3, 0.8, 0.3))
+			stock_label.add_theme_color_override("font_color", Color(0.4, 0.8, 0.4))
 		elif stock_ratio > 0.3:
-			stock_label.add_theme_color_override("font_color", Color(0.9, 0.8, 0.3))
+			stock_label.add_theme_color_override("font_color", Color(0.9, 0.8, 0.35))
 		else:
-			stock_label.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))
+			stock_label.add_theme_color_override("font_color", Color(0.9, 0.4, 0.4))
 	else:
-		stock_label.text = "-"
-		stock_label.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4))
-
+		stock_label.text = "—"
+		stock_label.add_theme_color_override("font_color", COLOR_TEXT_DIM)
+	
 	row.add_child(stock_label)
-
+	
 	# Weight column
 	var weight_label := Label.new()
-	weight_label.custom_minimum_size.x = 40
+	weight_label.custom_minimum_size.x = 50
 	weight_label.text = "%dt" % commodity.weight_per_unit
 	weight_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	weight_label.add_theme_font_size_override("font_size", 13)
-	weight_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+	weight_label.add_theme_color_override("font_color", COLOR_TEXT_DIM)
+	weight_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(weight_label)
-
-	# Actions
-	var actions := HBoxContainer.new()
-	actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	actions.add_theme_constant_override("separation", 6)
-	actions.alignment = BoxContainer.ALIGNMENT_END
-
-	# Buy Max button
-	if is_available and stock > 0:
-		var buy_max_btn := Button.new()
-		var max_buy := _calculate_max_buy(commodity, price, stock)
-		buy_max_btn.text = "Buy Max (%d)" % max_buy if max_buy > 0 else "Buy Max"
-		buy_max_btn.custom_minimum_size = Vector2(95, 30)
-		buy_max_btn.disabled = max_buy < 1
-		buy_max_btn.pressed.connect(_on_buy_pressed.bind(commodity.id, max_buy))
-		actions.add_child(buy_max_btn)
-
-		var buy_btn := Button.new()
-		buy_btn.text = "Buy..."
-		buy_btn.custom_minimum_size = Vector2(60, 30)
-		buy_btn.pressed.connect(_on_open_trade_panel.bind(commodity, true))
-		actions.add_child(buy_btn)
-
-	# Sell buttons
-	if owned > 0:
-		var sell_btn := Button.new()
-		sell_btn.text = "Sell..."
-		sell_btn.custom_minimum_size = Vector2(60, 30)
-		sell_btn.pressed.connect(_on_open_trade_panel.bind(commodity, false))
-		actions.add_child(sell_btn)
-
-		var sell_all_btn := Button.new()
-		sell_all_btn.text = "Sell All"
-		sell_all_btn.custom_minimum_size = Vector2(70, 30)
-		sell_all_btn.pressed.connect(_on_sell_pressed.bind(commodity.id, owned))
-		actions.add_child(sell_all_btn)
-
-	row.add_child(actions)
+	
 	panel.add_child(row)
-
 	return panel
+
+func _on_row_hover(panel: PanelContainer, is_hovering: bool) -> void:
+	if panel == selected_row:
+		return  # Don't change selected row style
+	
+	var style := panel.get_theme_stylebox("panel") as StyleBoxFlat
+	if style:
+		style.bg_color = COLOR_ROW_HOVER if is_hovering else COLOR_ROW_NORMAL
+
+func _on_row_input(event: InputEvent, panel: PanelContainer, commodity: Commodity) -> void:
+	if event is InputEventMouseButton:
+		var mb := event as InputEventMouseButton
+		if mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+			_select_commodity(panel, commodity)
+
+func _select_commodity(panel: PanelContainer, commodity: Commodity) -> void:
+	# Deselect previous
+	if selected_row != null and selected_row != panel:
+		var old_style := selected_row.get_theme_stylebox("panel") as StyleBoxFlat
+		if old_style:
+			old_style.bg_color = COLOR_ROW_NORMAL
+			old_style.border_width_left = 0
+			old_style.border_width_right = 0
+			old_style.border_width_top = 0
+			old_style.border_width_bottom = 0
+	
+	# Select new
+	selected_row = panel
+	selected_commodity = commodity
+	
+	var style := panel.get_theme_stylebox("panel") as StyleBoxFlat
+	if style:
+		style.bg_color = COLOR_ROW_SELECTED
+		style.border_color = COLOR_BORDER_SELECTED
+		style.border_width_left = 2
+		style.border_width_right = 0
+		style.border_width_top = 0
+		style.border_width_bottom = 0
+	
+	_update_trade_panel()
+
+func _update_trade_panel() -> void:
+	if selected_commodity == null:
+		selected_name.text = "Select a commodity"
+		selected_category.text = ""
+		price_label.text = "— cr"
+		range_label.text = "—"
+		quantity_label.text = "0"
+		total_label.text = "— cr"
+		quantity_slider.editable = false
+		buy_btn.disabled = true
+		buy_max_btn.disabled = true
+		sell_btn.disabled = true
+		sell_all_btn.disabled = true
+		return
+	
+	var current_planet: String = GameState.player.current_planet
+	var price: int = GameState.get_price_at(current_planet, selected_commodity.id)
+	var owned: int = GameState.player.get_cargo_quantity(selected_commodity.id)
+	var stock: int = GameState.get_stock_at(current_planet, selected_commodity.id)
+	var is_available: bool = selected_commodity.is_available_at(current_planet)
+	var price_range: Dictionary = DataRepo.get_commodity_price_range(selected_commodity.id)
+	var price_quality: Dictionary = DataRepo.get_price_quality(price, selected_commodity.id)
+	var quality: float = price_quality["quality"]
+	
+	# Update labels
+	selected_name.text = selected_commodity.commodity_name
+	selected_category.text = selected_commodity.category
+	
+	if is_available:
+		price_label.text = "%d cr" % price
+		price_label.add_theme_color_override("font_color", _get_quality_color(quality))
+	else:
+		price_label.text = "N/A"
+		price_label.add_theme_color_override("font_color", COLOR_TEXT_DIM)
+	
+	var range_min: int = price_range["min_price"]
+	var range_max: int = price_range["max_price"]
+	range_label.text = "%d – %d" % [range_min, range_max]
+	
+	# Calculate max buy
+	var max_buy: int = _calculate_max_buy(selected_commodity, price, stock) if is_available else 0
+	
+	# Setup slider for buying (default mode)
+	if max_buy > 0:
+		quantity_slider.min_value = 1
+		quantity_slider.max_value = max_buy
+		quantity_slider.value = max_buy
+		quantity_slider.editable = true
+		quantity_label.text = str(max_buy)
+		total_label.text = "%s cr" % _format_number(max_buy * price)
+	else:
+		quantity_slider.min_value = 1
+		quantity_slider.max_value = 1
+		quantity_slider.value = 1
+		quantity_slider.editable = false
+		quantity_label.text = "0"
+		total_label.text = "— cr"
+	
+	# Enable/disable buttons
+	buy_btn.disabled = max_buy < 1
+	buy_max_btn.disabled = max_buy < 1
+	buy_max_btn.text = "Buy Max" if max_buy < 1 else "Max (%d)" % max_buy
+	sell_btn.disabled = owned < 1
+	sell_all_btn.disabled = owned < 1
+	sell_all_btn.text = "Sell All" if owned < 1 else "All (%d)" % owned
 
 func _calculate_max_buy(commodity: Commodity, price: int, stock: int) -> int:
 	var player := GameState.player
@@ -254,206 +430,107 @@ func _calculate_max_buy(commodity: Commodity, price: int, stock: int) -> int:
 
 func _get_quality_color(quality: float) -> Color:
 	if quality <= 0.15:
-		return Color(0.2, 0.95, 0.3)  # Bright green
+		return Color(0.25, 0.95, 0.35)  # Bright green - excellent
 	elif quality <= 0.35:
-		return Color(0.5, 0.85, 0.3)  # Yellow-green
+		return Color(0.55, 0.9, 0.35)   # Yellow-green - good
 	elif quality <= 0.65:
-		return Color(0.85, 0.85, 0.3)  # Yellow
+		return Color(0.9, 0.85, 0.35)   # Yellow - fair
 	elif quality <= 0.85:
-		return Color(0.95, 0.55, 0.3)  # Orange
+		return Color(0.95, 0.6, 0.35)   # Orange - poor
 	else:
-		return Color(0.95, 0.3, 0.3)  # Red
+		return Color(0.95, 0.35, 0.35)  # Red - bad
 
-func _on_open_trade_panel(commodity: Commodity, buying: bool) -> void:
-	selected_commodity = commodity
-	is_buying = buying
-	_show_trade_panel()
-
-func _show_trade_panel() -> void:
-	if trade_panel != null:
-		trade_panel.queue_free()
-
-	var current_planet := GameState.player.current_planet
-	var price := GameState.get_price_at(current_planet, selected_commodity.id)
-	var owned := GameState.player.get_cargo_quantity(selected_commodity.id)
-	var stock := GameState.get_stock_at(current_planet, selected_commodity.id)
-
-	var max_qty: int
-	if is_buying:
-		max_qty = _calculate_max_buy(selected_commodity, price, stock)
-	else:
-		max_qty = owned
-
-	if max_qty < 1:
-		_show_message("Cannot trade - check credits/cargo/stock", Color(0.9, 0.3, 0.3))
+func _on_quantity_changed(value: float) -> void:
+	if selected_commodity == null:
 		return
-
-	# Create trade panel
-	trade_panel = PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.15, 0.15, 0.2, 1.0)
-	style.border_color = Color(0.3, 0.5, 0.8)
-	style.border_width_top = 2
-	style.border_width_bottom = 2
-	style.border_width_left = 2
-	style.border_width_right = 2
-	style.corner_radius_top_left = 6
-	style.corner_radius_top_right = 6
-	style.corner_radius_bottom_left = 6
-	style.corner_radius_bottom_right = 6
-	style.content_margin_left = 20
-	style.content_margin_right = 20
-	style.content_margin_top = 15
-	style.content_margin_bottom = 15
-	trade_panel.add_theme_stylebox_override("panel", style)
-
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 12)
-
-	# Title
-	var title := Label.new()
-	title.text = "%s %s" % ["Buy" if is_buying else "Sell", selected_commodity.commodity_name]
-	title.add_theme_font_size_override("font_size", 18)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(title)
-
-	# Quantity row
-	var qty_row := HBoxContainer.new()
-	qty_row.add_theme_constant_override("separation", 10)
-
-	var qty_title := Label.new()
-	qty_title.text = "Quantity:"
-	qty_title.add_theme_font_size_override("font_size", 14)
-	qty_row.add_child(qty_title)
-
-	quantity_slider = HSlider.new()
-	quantity_slider.min_value = 1
-	quantity_slider.max_value = max_qty
-	quantity_slider.value = max_qty
-	quantity_slider.step = 1
-	quantity_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	quantity_slider.value_changed.connect(_on_quantity_changed.bind(price))
-	qty_row.add_child(quantity_slider)
-
-	quantity_label = Label.new()
-	quantity_label.text = str(max_qty)
-	quantity_label.custom_minimum_size.x = 50
-	quantity_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	quantity_label.add_theme_font_size_override("font_size", 16)
-	qty_row.add_child(quantity_label)
-
-	vbox.add_child(qty_row)
-
-	# Total row
-	total_label = Label.new()
-	var total := max_qty * price
-	total_label.text = "Total: %s cr" % _format_number(total)
-	total_label.add_theme_font_size_override("font_size", 16)
-	total_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	if not is_buying:
-		var purchase_price := GameState.player.get_purchase_price(selected_commodity.id)
-		var profit := (price - purchase_price) * max_qty
-		if profit > 0:
-			total_label.text += " (+%d profit)" % profit
-			total_label.add_theme_color_override("font_color", Color(0.3, 0.9, 0.3))
-		elif profit < 0:
-			total_label.text += " (%d loss)" % profit
-			total_label.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))
-	vbox.add_child(total_label)
-
-	# Button row
-	var btn_row := HBoxContainer.new()
-	btn_row.add_theme_constant_override("separation", 15)
-	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
-
-	var cancel_btn := Button.new()
-	cancel_btn.text = "Cancel"
-	cancel_btn.custom_minimum_size = Vector2(80, 35)
-	cancel_btn.pressed.connect(_on_close_trade_panel)
-	btn_row.add_child(cancel_btn)
-
-	trade_action_btn = Button.new()
-	trade_action_btn.text = "Buy" if is_buying else "Sell"
-	trade_action_btn.custom_minimum_size = Vector2(80, 35)
-	trade_action_btn.pressed.connect(_on_execute_trade)
-	btn_row.add_child(trade_action_btn)
-
-	vbox.add_child(btn_row)
-
-	trade_panel.add_child(vbox)
-
-	# Position panel
-	trade_panel.position = Vector2(400, 250)
-	add_child(trade_panel)
-
-func _on_quantity_changed(value: float, price: int) -> void:
-	var qty := int(value)
+	
+	var qty: int = int(value)
+	var current_planet: String = GameState.player.current_planet
+	var price: int = GameState.get_price_at(current_planet, selected_commodity.id)
+	
 	quantity_label.text = str(qty)
-	var total := qty * price
-	total_label.text = "Total: %s cr" % _format_number(total)
+	total_label.text = "%s cr" % _format_number(qty * price)
 
-	if not is_buying:
-		var purchase_price := GameState.player.get_purchase_price(selected_commodity.id)
-		var profit := (price - purchase_price) * qty
-		if profit > 0:
-			total_label.text += " (+%d profit)" % profit
-			total_label.add_theme_color_override("font_color", Color(0.3, 0.9, 0.3))
-		elif profit < 0:
-			total_label.text += " (%d loss)" % profit
-			total_label.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))
-		else:
-			total_label.add_theme_color_override("font_color", Color(1, 1, 1))
-
-func _on_close_trade_panel() -> void:
-	if trade_panel != null:
-		trade_panel.queue_free()
-		trade_panel = null
-	selected_commodity = null
-
-func _on_execute_trade() -> void:
-	if selected_commodity == null or quantity_slider == null:
+func _on_buy_pressed() -> void:
+	if selected_commodity == null:
 		return
+	var qty: int = int(quantity_slider.value)
+	_execute_buy(selected_commodity.id, qty)
 
-	var qty := int(quantity_slider.value)
-	if is_buying:
-		_on_buy_pressed(selected_commodity.id, qty)
-	else:
-		_on_sell_pressed(selected_commodity.id, qty)
+func _on_buy_max_pressed() -> void:
+	if selected_commodity == null:
+		return
+	var current_planet: String = GameState.player.current_planet
+	var price: int = GameState.get_price_at(current_planet, selected_commodity.id)
+	var stock: int = GameState.get_stock_at(current_planet, selected_commodity.id)
+	var max_buy: int = _calculate_max_buy(selected_commodity, price, stock)
+	if max_buy > 0:
+		_execute_buy(selected_commodity.id, max_buy)
 
-	_on_close_trade_panel()
+func _on_sell_pressed() -> void:
+	if selected_commodity == null:
+		return
+	var qty: int = int(quantity_slider.value)
+	var owned: int = GameState.player.get_cargo_quantity(selected_commodity.id)
+	# Clamp to owned amount
+	qty = mini(qty, owned)
+	if qty > 0:
+		_execute_sell(selected_commodity.id, qty)
 
-func _on_buy_pressed(commodity_id: String, quantity: int) -> void:
+func _on_sell_all_pressed() -> void:
+	if selected_commodity == null:
+		return
+	var owned: int = GameState.player.get_cargo_quantity(selected_commodity.id)
+	if owned > 0:
+		_execute_sell(selected_commodity.id, owned)
+
+func _execute_buy(commodity_id: String, quantity: int) -> void:
 	if quantity < 1:
 		return
-	var result := GameState.buy_commodity(commodity_id, quantity)
+	var result: Dictionary = GameState.buy_commodity(commodity_id, quantity)
 	if result["success"]:
-		_show_message(result["message"], Color(0.4, 0.8, 0.4))
+		_show_message(result["message"], COLOR_PROFIT)
 	else:
-		_show_message(result["message"], Color(0.9, 0.3, 0.3))
-	_update_header()
-	_build_commodity_rows()
+		_show_message(result["message"], COLOR_LOSS)
+	_refresh_ui()
 
-func _on_sell_pressed(commodity_id: String, quantity: int) -> void:
+func _execute_sell(commodity_id: String, quantity: int) -> void:
 	if quantity < 1:
 		return
-	var result := GameState.sell_commodity(commodity_id, quantity)
+	var result: Dictionary = GameState.sell_commodity(commodity_id, quantity)
 	if result["success"]:
-		var color := Color(0.4, 0.8, 0.4)
+		var color: Color = COLOR_PROFIT
 		if result.has("profit"):
-			if result["profit"] > 0:
-				color = Color(0.3, 0.95, 0.3)
-			elif result["profit"] < 0:
-				color = Color(0.95, 0.7, 0.3)
+			var profit: int = result["profit"]
+			if profit < 0:
+				color = Color(0.95, 0.7, 0.35)  # Orange for loss
 		_show_message(result["message"], color)
-
-		var game_over := GameState.check_game_over()
+		
+		var game_over: Dictionary = GameState.check_game_over()
 		if game_over["game_over"]:
 			get_tree().change_scene_to_file("res://scenes/game_over.tscn")
 			return
 	else:
-		_show_message(result["message"], Color(0.9, 0.3, 0.3))
-	_update_header()
+		_show_message(result["message"], COLOR_LOSS)
+	_refresh_ui()
+
+func _refresh_ui() -> void:
+	_update_player_info()
 	_build_commodity_rows()
+	
+	# Re-select the commodity if it still exists
+	if selected_commodity != null:
+		if commodity_rows.has(selected_commodity.id):
+			var panel: PanelContainer = commodity_rows[selected_commodity.id]
+			_select_commodity(panel, selected_commodity)
+		else:
+			selected_commodity = null
+			selected_row = null
+			_update_trade_panel()
+
+func _show_message(text: String, color: Color) -> void:
+	message_label.text = text
+	message_label.add_theme_color_override("font_color", color)
 
 func _on_back_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/galaxy_map.tscn")
@@ -461,7 +538,3 @@ func _on_back_pressed() -> void:
 func _on_main_menu_pressed() -> void:
 	GameState.return_to_main_menu()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-
-func _show_message(text: String, color: Color) -> void:
-	message_label.text = text
-	message_label.add_theme_color_override("font_color", color)

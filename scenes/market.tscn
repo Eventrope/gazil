@@ -18,7 +18,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.08, 0.08, 0.12, 1)
+color = Color(0.06, 0.07, 0.1, 1)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -27,122 +27,344 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 20
+theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
+theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 15
-
-[node name="Header" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 28
-text = "Market - Earth"
-
-[node name="CreditsLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Credits: 1,000"
-
-[node name="CargoLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Cargo: 0/100"
-
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="TableHeader" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="MainLayout" type="HBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="NameHeader" type="Label" parent="MarginContainer/VBoxContainer/TableHeader"]
-custom_minimum_size = Vector2(200, 0)
+[node name="LeftPanel" type="VBoxContainer" parent="MarginContainer/MainLayout"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.5
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/MainLayout/LeftPanel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/MainLayout/LeftPanel/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.9, 0.92, 0.95, 1)
+text = "Market - Earth"
+
+[node name="Spacer" type="Control" parent="MarginContainer/MainLayout/LeftPanel/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DayLabel" type="Label" parent="MarginContainer/MainLayout/LeftPanel/Header"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
+text = "Day 1"
+
+[node name="TableHeader" type="HBoxContainer" parent="MarginContainer/MainLayout/LeftPanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="NameHeader" type="Label" parent="MarginContainer/MainLayout/LeftPanel/TableHeader"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.45, 0.48, 0.55, 1)
 text = "COMMODITY"
 
-[node name="PriceHeader" type="Label" parent="MarginContainer/VBoxContainer/TableHeader"]
+[node name="PriceHeader" type="Label" parent="MarginContainer/MainLayout/LeftPanel/TableHeader"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.45, 0.48, 0.55, 1)
 text = "PRICE"
 horizontal_alignment = 1
 
-[node name="OwnedHeader" type="Label" parent="MarginContainer/VBoxContainer/TableHeader"]
-custom_minimum_size = Vector2(80, 0)
+[node name="OwnedHeader" type="Label" parent="MarginContainer/MainLayout/LeftPanel/TableHeader"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.45, 0.48, 0.55, 1)
 text = "OWNED"
 horizontal_alignment = 1
 
-[node name="StockHeader" type="Label" parent="MarginContainer/VBoxContainer/TableHeader"]
-custom_minimum_size = Vector2(80, 0)
+[node name="StockHeader" type="Label" parent="MarginContainer/MainLayout/LeftPanel/TableHeader"]
+custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.45, 0.48, 0.55, 1)
 text = "STOCK"
 horizontal_alignment = 1
 
-[node name="WeightHeader" type="Label" parent="MarginContainer/VBoxContainer/TableHeader"]
-custom_minimum_size = Vector2(80, 0)
+[node name="WeightHeader" type="Label" parent="MarginContainer/MainLayout/LeftPanel/TableHeader"]
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
-text = "WEIGHT"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.45, 0.48, 0.55, 1)
+text = "WT"
 horizontal_alignment = 1
 
-[node name="ActionsHeader" type="Label" parent="MarginContainer/VBoxContainer/TableHeader"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
-text = "ACTIONS"
-horizontal_alignment = 1
-
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/MainLayout/LeftPanel"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CommodityList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
+[node name="CommodityList" type="VBoxContainer" parent="MarginContainer/MainLayout/LeftPanel/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="RightPanel" type="VBoxContainer" parent="MarginContainer/MainLayout"]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PlayerInfo" type="PanelContainer" parent="MarginContainer/MainLayout/RightPanel"]
+layout_mode = 2
+
+[node name="PlayerInfoContent" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/PlayerInfo"]
+layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="CreditsRow" type="HBoxContainer" parent="MarginContainer/MainLayout/RightPanel/PlayerInfo/PlayerInfoContent"]
 layout_mode = 2
 
-[node name="Footer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="CreditsTitle" type="Label" parent="MarginContainer/MainLayout/RightPanel/PlayerInfo/PlayerInfoContent/CreditsRow"]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
+text = "Credits"
 
-[node name="MessageLabel" type="Label" parent="MarginContainer/VBoxContainer/Footer"]
+[node name="Spacer" type="Control" parent="MarginContainer/MainLayout/RightPanel/PlayerInfo/PlayerInfoContent/CreditsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 16
+
+[node name="CreditsLabel" type="Label" parent="MarginContainer/MainLayout/RightPanel/PlayerInfo/PlayerInfoContent/CreditsRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.4, 0.9, 0.4, 1)
+text = "1,000"
+
+[node name="CargoRow" type="HBoxContainer" parent="MarginContainer/MainLayout/RightPanel/PlayerInfo/PlayerInfoContent"]
+layout_mode = 2
+
+[node name="CargoTitle" type="Label" parent="MarginContainer/MainLayout/RightPanel/PlayerInfo/PlayerInfoContent/CargoRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
+text = "Cargo"
+
+[node name="Spacer" type="Control" parent="MarginContainer/MainLayout/RightPanel/PlayerInfo/PlayerInfoContent/CargoRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CargoLabel" type="Label" parent="MarginContainer/MainLayout/RightPanel/PlayerInfo/PlayerInfoContent/CargoRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+text = "0/100 t"
+
+[node name="TradePanel" type="PanelContainer" parent="MarginContainer/MainLayout/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TradePanelContent" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/TradePanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SelectedTitle" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.45, 0.48, 0.55, 1)
+text = "SELECTED"
+
+[node name="SelectedName" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.9, 0.92, 0.95, 1)
+text = "Select a commodity"
+
+[node name="SelectedCategory" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.5, 0.52, 0.58, 1)
 text = ""
 
-[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/Footer"]
-custom_minimum_size = Vector2(150, 45)
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_constants/separation = 8
+
+[node name="PriceInfo" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CurrentPriceRow" type="HBoxContainer" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/PriceInfo"]
+layout_mode = 2
+
+[node name="PriceTitle" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/PriceInfo/CurrentPriceRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
+text = "Price"
+
+[node name="Spacer" type="Control" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/PriceInfo/CurrentPriceRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PriceLabel" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/PriceInfo/CurrentPriceRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "-- cr"
+
+[node name="RangeRow" type="HBoxContainer" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/PriceInfo"]
+layout_mode = 2
+
+[node name="RangeTitle" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/PriceInfo/RangeRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
+text = "Range"
+
+[node name="Spacer" type="Control" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/PriceInfo/RangeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RangeLabel" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/PriceInfo/RangeRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
+text = "--"
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="QuantitySection" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="QuantityRow" type="HBoxContainer" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection"]
+layout_mode = 2
+
+[node name="QuantityTitle" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection/QuantityRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
+text = "Quantity"
+
+[node name="Spacer" type="Control" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection/QuantityRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuantityLabel" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection/QuantityRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.9, 0.92, 0.95, 1)
+text = "0"
+
+[node name="QuantitySlider" type="HSlider" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection"]
+layout_mode = 2
+min_value = 1.0
+max_value = 100.0
+value = 1.0
+
+[node name="TotalRow" type="HBoxContainer" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection"]
+layout_mode = 2
+
+[node name="TotalTitle" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection/TotalRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
+text = "Total"
+
+[node name="Spacer" type="Control" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection/TotalRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TotalLabel" type="Label" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection/TotalRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.9, 0.92, 0.95, 1)
+text = "-- cr"
+
+[node name="Spacer" type="Control" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TradeButtons" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BuyRow" type="HBoxContainer" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BuyButton" type="Button" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/BuyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 38)
+theme_override_font_sizes/font_size = 14
+text = "Buy"
+disabled = true
+
+[node name="BuyMaxButton" type="Button" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/BuyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 38)
+theme_override_font_sizes/font_size = 14
+text = "Buy Max"
+disabled = true
+
+[node name="SellRow" type="HBoxContainer" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SellButton" type="Button" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/SellRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 38)
+theme_override_font_sizes/font_size = 14
+text = "Sell"
+disabled = true
+
+[node name="SellAllButton" type="Button" parent="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/SellRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 38)
+theme_override_font_sizes/font_size = 14
+text = "Sell All"
+disabled = true
+
+[node name="MessageLabel" type="Label" parent="MarginContainer/MainLayout/RightPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="NavButtons" type="HBoxContainer" parent="MarginContainer/MainLayout/RightPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BackButton" type="Button" parent="MarginContainer/MainLayout/RightPanel/NavButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 40)
+theme_override_font_sizes/font_size = 14
 text = "Back to Map"
 
-[node name="MainMenuButton" type="Button" parent="MarginContainer/VBoxContainer/Footer"]
-custom_minimum_size = Vector2(150, 45)
+[node name="MainMenuButton" type="Button" parent="MarginContainer/MainLayout/RightPanel/NavButtons"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Main Menu"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 40)
+theme_override_font_sizes/font_size = 14
+text = "Menu"
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Footer/BackButton" to="." method="_on_back_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Footer/MainMenuButton" to="." method="_on_main_menu_pressed"]
+[connection signal="value_changed" from="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/QuantitySection/QuantitySlider" to="." method="_on_quantity_changed"]
+[connection signal="pressed" from="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/BuyRow/BuyButton" to="." method="_on_buy_pressed"]
+[connection signal="pressed" from="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/BuyRow/BuyMaxButton" to="." method="_on_buy_max_pressed"]
+[connection signal="pressed" from="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/SellRow/SellButton" to="." method="_on_sell_pressed"]
+[connection signal="pressed" from="MarginContainer/MainLayout/RightPanel/TradePanel/TradePanelContent/TradeButtons/SellRow/SellAllButton" to="." method="_on_sell_all_pressed"]
+[connection signal="pressed" from="MarginContainer/MainLayout/RightPanel/NavButtons/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="MarginContainer/MainLayout/RightPanel/NavButtons/MainMenuButton" to="." method="_on_main_menu_pressed"]
