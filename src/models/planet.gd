@@ -4,6 +4,10 @@ extends RefCounted
 var id: String
 var planet_name: String
 var description: String
+var archetype: String  # "mining", "agricultural", "gas_giant", "research", "leisure", "crossroads"
+var produces: Array  # Commodity IDs this planet produces cheaply
+var consumes: Array  # Commodity IDs this planet wants/pays more for
+var inspection_chance: float  # 0.0-1.0 chance of contraband inspection
 var distance_from: Dictionary  # {planet_id: int}
 var price_modifiers: Dictionary  # {commodity_id: float}
 var supply_volatility: float
@@ -19,6 +23,10 @@ func _init(data: Dictionary = {}) -> void:
 	id = data.get("id", "")
 	planet_name = data.get("name", "")
 	description = data.get("description", "")
+	archetype = data.get("archetype", "crossroads")
+	produces = data.get("produces", [])
+	consumes = data.get("consumes", [])
+	inspection_chance = data.get("inspection_chance", 0.2)
 	distance_from = data.get("distance_from", {})
 	price_modifiers = data.get("price_modifiers", {})
 	supply_volatility = data.get("supply_volatility", 0.1)
@@ -42,3 +50,21 @@ func get_base_stock(commodity_id: String) -> int:
 
 func get_stock_regen(commodity_id: String) -> float:
 	return stock_regen_rate.get(commodity_id, 10.0)
+
+func produces_commodity(commodity_id: String) -> bool:
+	return commodity_id in produces
+
+func consumes_commodity(commodity_id: String) -> bool:
+	return commodity_id in consumes
+
+func get_price_indicator(commodity_id: String) -> String:
+	var modifier := get_price_modifier(commodity_id)
+	if modifier <= 0.6:
+		return "CHEAP"
+	elif modifier >= 1.5:
+		return "EXPENSIVE"
+	else:
+		return "FAIR"
+
+func is_shady() -> bool:
+	return inspection_chance <= 0.1

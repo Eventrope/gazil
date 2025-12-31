@@ -156,7 +156,12 @@ func _on_planet_selected(index: int) -> void:
 	var current_day := GameState.player.day
 
 	planet_name.text = planet.planet_name
-	planet_description.text = planet.description
+
+	# Build description with market indicators
+	var desc := planet.description + "\n\n"
+	desc += _get_market_indicators(planet)
+
+	planet_description.text = desc
 
 	# Check if locked
 	if not planet.is_unlocked(current_day):
@@ -204,6 +209,49 @@ func _on_planet_selected(index: int) -> void:
 		else:
 			travel_button.disabled = true
 			fuel_cost_label.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))
+
+func _get_market_indicators(planet: Planet) -> String:
+	var lines: Array = []
+
+	# Show what this planet produces/consumes
+	if not planet.produces.is_empty():
+		var produce_names: Array = []
+		for p_id in planet.produces:
+			var c: Commodity = DataRepo.get_commodity(p_id)
+			if c:
+				produce_names.append(c.commodity_name)
+		if not produce_names.is_empty():
+			lines.append("Produces: " + ", ".join(produce_names) + " [CHEAP]")
+
+	if not planet.consumes.is_empty():
+		var consume_names: Array = []
+		for c_id in planet.consumes:
+			var c: Commodity = DataRepo.get_commodity(c_id)
+			if c:
+				consume_names.append(c.commodity_name)
+		if not consume_names.is_empty():
+			lines.append("Wants: " + ", ".join(consume_names) + " [EXPENSIVE]")
+
+	# Calculate cargo profit estimate
+	var player := GameState.player
+	if not player.cargo.is_empty():
+		var total_profit := 0
+		for commodity_id in player.cargo:
+			var qty: int = player.cargo[commodity_id]
+			if qty > 0:
+				var dest_price := GameState.get_price_at(planet.id, commodity_id)
+				var purchase_price := player.get_purchase_price(commodity_id)
+				var profit := (dest_price - purchase_price) * qty
+				total_profit += profit
+
+		if total_profit > 0:
+			lines.append("\nYour Cargo Profit Estimate: +%s cr" % _format_number(total_profit))
+		elif total_profit < 0:
+			lines.append("\nYour Cargo Profit Estimate: %s cr" % _format_number(total_profit))
+		else:
+			lines.append("\nYour Cargo Profit Estimate: ~0 cr")
+
+	return "\n".join(lines)
 
 func _on_travel_pressed() -> void:
 	if selected_planet_id.is_empty():

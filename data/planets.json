@@ -3,7 +3,11 @@
     {
       "id": "earth",
       "name": "Earth",
-      "description": "Humanity's homeworld. Balanced prices, a safe place to start your trading career.",
+      "description": "Humanity's homeworld. Balanced prices, bureaucratic inspections, a safe place to start your trading career.",
+      "archetype": "crossroads",
+      "produces": [],
+      "consumes": [],
+      "inspection_chance": 0.4,
       "unlock_day": 0,
       "category": "inner_system",
       "distance_from": {
@@ -20,36 +24,52 @@
         "pluto": 15
       },
       "price_modifiers": {
-        "food": 1.0,
-        "ore": 1.2,
-        "tech": 0.8,
+        "ore": 1.0,
+        "grain": 1.0,
+        "fuel": 1.0,
+        "parts": 0.9,
+        "medicine": 1.0,
+        "tech": 0.85,
+        "entertainment": 1.0,
+        "artifacts": 1.3,
         "luxury": 1.0,
-        "fuel_cells": 1.0,
-        "medicine": 1.0
+        "contraband": 1.5
       },
       "base_stock": {
-        "food": 500,
-        "ore": 200,
-        "tech": 300,
-        "luxury": 150,
-        "fuel_cells": 400,
-        "medicine": 250
+        "ore": 100,
+        "grain": 100,
+        "fuel": 120,
+        "parts": 100,
+        "medicine": 80,
+        "tech": 120,
+        "entertainment": 80,
+        "artifacts": 0,
+        "luxury": 60,
+        "contraband": 0
       },
       "stock_regen_rate": {
-        "food": 50,
-        "ore": 20,
-        "tech": 30,
-        "luxury": 15,
-        "fuel_cells": 40,
-        "medicine": 25
+        "ore": 8,
+        "grain": 8,
+        "fuel": 10,
+        "parts": 8,
+        "medicine": 6,
+        "tech": 10,
+        "entertainment": 6,
+        "artifacts": 0,
+        "luxury": 4,
+        "contraband": 0
       },
       "supply_volatility": 0.1,
-      "fuel_price_modifier": 0.7
+      "fuel_price_modifier": 0.8
     },
     {
       "id": "mercury",
       "name": "Mercury Mining Outpost",
-      "description": "Extreme heat mining operation. Solar energy abundant, ore plentiful, but harsh conditions mean high prices for comfort goods.",
+      "description": "Extreme heat mining operation. Ore and parts overflow, but workers desperately need food and entertainment.",
+      "archetype": "mining",
+      "produces": ["ore", "parts"],
+      "consumes": ["grain", "entertainment"],
+      "inspection_chance": 0.3,
       "unlock_day": 0,
       "category": "inner_system",
       "distance_from": {
@@ -66,36 +86,52 @@
         "pluto": 16
       },
       "price_modifiers": {
-        "food": 1.6,
         "ore": 0.4,
-        "tech": 1.3,
-        "luxury": 2.0,
-        "fuel_cells": 0.5,
-        "medicine": 1.5
+        "grain": 1.8,
+        "fuel": 0.6,
+        "parts": 0.5,
+        "medicine": 1.4,
+        "tech": 1.2,
+        "entertainment": 2.0,
+        "artifacts": 1.5,
+        "luxury": 1.8,
+        "contraband": 1.3
       },
       "base_stock": {
-        "food": 100,
-        "ore": 800,
-        "tech": 150,
-        "luxury": 50,
-        "fuel_cells": 600,
-        "medicine": 100
+        "ore": 350,
+        "grain": 30,
+        "fuel": 80,
+        "parts": 280,
+        "medicine": 40,
+        "tech": 50,
+        "entertainment": 25,
+        "artifacts": 0,
+        "luxury": 20,
+        "contraband": 0
       },
       "stock_regen_rate": {
-        "food": 10,
-        "ore": 80,
-        "tech": 15,
-        "luxury": 5,
-        "fuel_cells": 60,
-        "medicine": 10
+        "ore": 35,
+        "grain": 3,
+        "fuel": 6,
+        "parts": 25,
+        "medicine": 3,
+        "tech": 4,
+        "entertainment": 2,
+        "artifacts": 0,
+        "luxury": 2,
+        "contraband": 0
       },
-      "supply_volatility": 0.2,
+      "supply_volatility": 0.15,
       "fuel_price_modifier": 0.5
     },
     {
       "id": "venus",
-      "name": "Venus Station",
-      "description": "Floating cloud cities. A hub for luxury goods and high technology.",
+      "name": "Venus Cloud City",
+      "description": "Floating pleasure domes above the acid clouds. Entertainment and luxury flow freely, but raw materials are scarce.",
+      "archetype": "leisure",
+      "produces": ["entertainment", "luxury"],
+      "consumes": ["ore", "parts"],
+      "inspection_chance": 0.25,
       "unlock_day": 0,
       "category": "inner_system",
       "distance_from": {
@@ -112,28 +148,40 @@
         "pluto": 16
       },
       "price_modifiers": {
-        "food": 1.3,
-        "ore": 1.5,
-        "tech": 0.6,
-        "luxury": 0.7,
-        "fuel_cells": 1.2,
-        "medicine": 0.9
+        "ore": 1.6,
+        "grain": 1.2,
+        "fuel": 1.1,
+        "parts": 1.5,
+        "medicine": 0.9,
+        "tech": 0.8,
+        "entertainment": 0.5,
+        "artifacts": 1.4,
+        "luxury": 0.6,
+        "contraband": 1.4
       },
       "base_stock": {
-        "food": 200,
-        "ore": 100,
-        "tech": 400,
-        "luxury": 300,
-        "fuel_cells": 200,
-        "medicine": 200
+        "ore": 30,
+        "grain": 60,
+        "fuel": 70,
+        "parts": 35,
+        "medicine": 80,
+        "tech": 100,
+        "entertainment": 300,
+        "artifacts": 0,
+        "luxury": 250,
+        "contraband": 0
       },
       "stock_regen_rate": {
-        "food": 20,
-        "ore": 10,
-        "tech": 40,
-        "luxury": 30,
-        "fuel_cells": 20,
-        "medicine": 20
+        "ore": 2,
+        "grain": 5,
+        "fuel": 5,
+        "parts": 3,
+        "medicine": 6,
+        "tech": 8,
+        "entertainment": 28,
+        "artifacts": 0,
+        "luxury": 22,
+        "contraband": 0
       },
       "supply_volatility": 0.12,
       "fuel_price_modifier": 1.0
@@ -141,7 +189,11 @@
     {
       "id": "mars",
       "name": "Mars Colony",
-      "description": "Industrial mining hub. Cheap ore, but food is scarce and expensive.",
+      "description": "Industrial mining hub with strict customs. Cheap ore flows out, but food is worth its weight in gold.",
+      "archetype": "mining",
+      "produces": ["ore", "parts"],
+      "consumes": ["grain", "entertainment"],
+      "inspection_chance": 0.4,
       "unlock_day": 0,
       "category": "inner_system",
       "distance_from": {
@@ -158,28 +210,40 @@
         "pluto": 13
       },
       "price_modifiers": {
-        "food": 1.8,
-        "ore": 0.5,
+        "ore": 0.45,
+        "grain": 1.9,
+        "fuel": 0.85,
+        "parts": 0.55,
+        "medicine": 1.3,
         "tech": 1.1,
-        "luxury": 1.3,
-        "fuel_cells": 0.9,
-        "medicine": 1.4
+        "entertainment": 1.8,
+        "artifacts": 1.4,
+        "luxury": 1.5,
+        "contraband": 1.6
       },
       "base_stock": {
-        "food": 150,
-        "ore": 700,
-        "tech": 200,
-        "luxury": 100,
-        "fuel_cells": 350,
-        "medicine": 150
+        "ore": 380,
+        "grain": 35,
+        "fuel": 100,
+        "parts": 300,
+        "medicine": 45,
+        "tech": 60,
+        "entertainment": 30,
+        "artifacts": 0,
+        "luxury": 25,
+        "contraband": 0
       },
       "stock_regen_rate": {
-        "food": 15,
-        "ore": 70,
-        "tech": 20,
-        "luxury": 10,
-        "fuel_cells": 35,
-        "medicine": 15
+        "ore": 38,
+        "grain": 3,
+        "fuel": 8,
+        "parts": 28,
+        "medicine": 4,
+        "tech": 5,
+        "entertainment": 2,
+        "artifacts": 0,
+        "luxury": 2,
+        "contraband": 0
       },
       "supply_volatility": 0.15,
       "fuel_price_modifier": 0.85
@@ -187,7 +251,11 @@
     {
       "id": "ceres",
       "name": "Ceres Station",
-      "description": "Asteroid belt hub. A crossroads for traders, with moderate prices and high traffic.",
+      "description": "Asteroid belt trading hub. Lawless enough for 'special goods' to flow freely. Don't ask, don't tell.",
+      "archetype": "crossroads",
+      "produces": ["ore"],
+      "consumes": ["grain", "medicine"],
+      "inspection_chance": 0.05,
       "unlock_day": 10,
       "category": "belt",
       "distance_from": {
@@ -204,36 +272,52 @@
         "pluto": 12
       },
       "price_modifiers": {
-        "food": 1.4,
         "ore": 0.5,
-        "tech": 1.1,
-        "luxury": 1.3,
-        "fuel_cells": 1.0,
-        "medicine": 1.2
+        "grain": 1.5,
+        "fuel": 0.9,
+        "parts": 0.7,
+        "medicine": 1.4,
+        "tech": 1.0,
+        "entertainment": 1.2,
+        "artifacts": 1.3,
+        "luxury": 1.1,
+        "contraband": 0.4
       },
       "base_stock": {
-        "food": 220,
-        "ore": 900,
-        "tech": 180,
-        "luxury": 80,
-        "fuel_cells": 320,
-        "medicine": 120
+        "ore": 250,
+        "grain": 50,
+        "fuel": 90,
+        "parts": 120,
+        "medicine": 35,
+        "tech": 60,
+        "entertainment": 50,
+        "artifacts": 0,
+        "luxury": 40,
+        "contraband": 80
       },
       "stock_regen_rate": {
-        "food": 22,
-        "ore": 90,
-        "tech": 18,
-        "luxury": 8,
-        "fuel_cells": 32,
-        "medicine": 12
+        "ore": 22,
+        "grain": 4,
+        "fuel": 7,
+        "parts": 10,
+        "medicine": 3,
+        "tech": 5,
+        "entertainment": 4,
+        "artifacts": 0,
+        "luxury": 3,
+        "contraband": 8
       },
-      "supply_volatility": 0.12,
+      "supply_volatility": 0.18,
       "fuel_price_modifier": 0.85
     },
     {
       "id": "jupiter",
       "name": "Jupiter Orbital",
-      "description": "Massive fuel harvesting station. Fuel cells are dirt cheap here.",
+      "description": "Massive fuel harvesting operation. Gloop Juice is practically free here. Everything else? Not so much.",
+      "archetype": "gas_giant",
+      "produces": ["fuel"],
+      "consumes": ["grain", "luxury", "entertainment"],
+      "inspection_chance": 0.2,
       "unlock_day": 0,
       "category": "outer_system",
       "distance_from": {
@@ -250,36 +334,52 @@
         "pluto": 10
       },
       "price_modifiers": {
-        "food": 1.5,
-        "ore": 1.1,
+        "ore": 1.2,
+        "grain": 1.6,
+        "fuel": 0.3,
+        "parts": 1.1,
+        "medicine": 1.3,
         "tech": 1.2,
-        "luxury": 1.6,
-        "fuel_cells": 0.3,
-        "medicine": 1.3
+        "entertainment": 1.7,
+        "artifacts": 1.5,
+        "luxury": 1.8,
+        "contraband": 1.2
       },
       "base_stock": {
-        "food": 180,
-        "ore": 150,
-        "tech": 150,
-        "luxury": 80,
-        "fuel_cells": 950,
-        "medicine": 120
+        "ore": 50,
+        "grain": 40,
+        "fuel": 400,
+        "parts": 60,
+        "medicine": 40,
+        "tech": 50,
+        "entertainment": 30,
+        "artifacts": 0,
+        "luxury": 25,
+        "contraband": 0
       },
       "stock_regen_rate": {
-        "food": 18,
-        "ore": 15,
-        "tech": 15,
-        "luxury": 8,
-        "fuel_cells": 95,
-        "medicine": 12
+        "ore": 4,
+        "grain": 3,
+        "fuel": 40,
+        "parts": 5,
+        "medicine": 3,
+        "tech": 4,
+        "entertainment": 2,
+        "artifacts": 0,
+        "luxury": 2,
+        "contraband": 0
       },
       "supply_volatility": 0.18,
-      "fuel_price_modifier": 0.4
+      "fuel_price_modifier": 0.35
     },
     {
       "id": "europa",
       "name": "Europa Ice Colony",
-      "description": "Subsurface ocean colony beneath the ice. Water extraction makes fuel cells cheap, but imported goods are expensive.",
+      "description": "Subsurface research paradise. Scientists study alien microbes and need lots of medicine and tech.",
+      "archetype": "research",
+      "produces": ["medicine", "tech"],
+      "consumes": ["grain", "luxury"],
+      "inspection_chance": 0.2,
       "unlock_day": 15,
       "category": "outer_system",
       "distance_from": {
@@ -296,36 +396,52 @@
         "pluto": 11
       },
       "price_modifiers": {
-        "food": 1.7,
         "ore": 1.3,
-        "tech": 1.4,
-        "luxury": 1.9,
-        "fuel_cells": 0.3,
-        "medicine": 1.6
+        "grain": 1.8,
+        "fuel": 0.5,
+        "parts": 1.2,
+        "medicine": 0.5,
+        "tech": 0.55,
+        "entertainment": 1.5,
+        "artifacts": 1.6,
+        "luxury": 2.0,
+        "contraband": 1.3
       },
       "base_stock": {
-        "food": 150,
-        "ore": 100,
-        "tech": 100,
-        "luxury": 50,
-        "fuel_cells": 700,
-        "medicine": 80
+        "ore": 40,
+        "grain": 30,
+        "fuel": 150,
+        "parts": 50,
+        "medicine": 280,
+        "tech": 250,
+        "entertainment": 35,
+        "artifacts": 0,
+        "luxury": 20,
+        "contraband": 0
       },
       "stock_regen_rate": {
-        "food": 15,
-        "ore": 10,
-        "tech": 10,
-        "luxury": 5,
-        "fuel_cells": 70,
-        "medicine": 8
+        "ore": 3,
+        "grain": 2,
+        "fuel": 12,
+        "parts": 4,
+        "medicine": 25,
+        "tech": 22,
+        "entertainment": 3,
+        "artifacts": 0,
+        "luxury": 2,
+        "contraband": 0
       },
-      "supply_volatility": 0.18,
-      "fuel_price_modifier": 0.4
+      "supply_volatility": 0.15,
+      "fuel_price_modifier": 0.45
     },
     {
       "id": "ganymede",
       "name": "Ganymede Agricultural Dome",
-      "description": "Massive enclosed farming operation. Fresh food is actually cheap here, making it unique in the outer system.",
+      "description": "Massive enclosed farming operation. The only outer system source of fresh food. Tech-hungry farmers pay top dollar for gadgets.",
+      "archetype": "agricultural",
+      "produces": ["grain"],
+      "consumes": ["tech", "medicine"],
+      "inspection_chance": 0.2,
       "unlock_day": 15,
       "category": "outer_system",
       "distance_from": {
@@ -342,36 +458,52 @@
         "pluto": 11
       },
       "price_modifiers": {
-        "food": 0.5,
-        "ore": 1.4,
-        "tech": 1.2,
-        "luxury": 1.5,
-        "fuel_cells": 0.8,
-        "medicine": 1.0
+        "ore": 1.3,
+        "grain": 0.4,
+        "fuel": 0.7,
+        "parts": 1.1,
+        "medicine": 1.5,
+        "tech": 1.6,
+        "entertainment": 1.3,
+        "artifacts": 1.4,
+        "luxury": 1.4,
+        "contraband": 1.2
       },
       "base_stock": {
-        "food": 850,
-        "ore": 80,
-        "tech": 150,
-        "luxury": 80,
-        "fuel_cells": 300,
-        "medicine": 200
+        "ore": 45,
+        "grain": 350,
+        "fuel": 100,
+        "parts": 60,
+        "medicine": 30,
+        "tech": 35,
+        "entertainment": 45,
+        "artifacts": 0,
+        "luxury": 35,
+        "contraband": 0
       },
       "stock_regen_rate": {
-        "food": 85,
-        "ore": 8,
-        "tech": 15,
-        "luxury": 8,
-        "fuel_cells": 30,
-        "medicine": 20
+        "ore": 3,
+        "grain": 35,
+        "fuel": 8,
+        "parts": 5,
+        "medicine": 2,
+        "tech": 3,
+        "entertainment": 4,
+        "artifacts": 0,
+        "luxury": 3,
+        "contraband": 0
       },
       "supply_volatility": 0.15,
-      "fuel_price_modifier": 0.9
+      "fuel_price_modifier": 0.75
     },
     {
       "id": "saturn",
       "name": "Saturn Ring Station",
-      "description": "Mining operation in the rings. Rare minerals fetch premium prices here.",
+      "description": "Luxury resort among the rings. Rich tourists demand the finer things. Ore and parts? That's peasant stuff.",
+      "archetype": "leisure",
+      "produces": ["entertainment", "luxury"],
+      "consumes": ["ore", "parts"],
+      "inspection_chance": 0.2,
       "unlock_day": 0,
       "category": "outer_system",
       "distance_from": {
@@ -388,36 +520,52 @@
         "pluto": 7
       },
       "price_modifiers": {
-        "food": 1.7,
-        "ore": 0.7,
-        "tech": 1.3,
-        "luxury": 1.5,
-        "fuel_cells": 0.6,
-        "medicine": 1.4
+        "ore": 1.7,
+        "grain": 1.4,
+        "fuel": 0.55,
+        "parts": 1.6,
+        "medicine": 1.2,
+        "tech": 1.0,
+        "entertainment": 0.55,
+        "artifacts": 1.8,
+        "luxury": 0.6,
+        "contraband": 1.3
       },
       "base_stock": {
-        "food": 150,
-        "ore": 650,
-        "tech": 150,
-        "luxury": 80,
-        "fuel_cells": 500,
-        "medicine": 100
+        "ore": 25,
+        "grain": 50,
+        "fuel": 180,
+        "parts": 30,
+        "medicine": 60,
+        "tech": 80,
+        "entertainment": 280,
+        "artifacts": 0,
+        "luxury": 220,
+        "contraband": 0
       },
       "stock_regen_rate": {
-        "food": 15,
-        "ore": 65,
-        "tech": 15,
-        "luxury": 8,
-        "fuel_cells": 50,
-        "medicine": 10
+        "ore": 2,
+        "grain": 4,
+        "fuel": 15,
+        "parts": 2,
+        "medicine": 5,
+        "tech": 6,
+        "entertainment": 25,
+        "artifacts": 0,
+        "luxury": 20,
+        "contraband": 0
       },
       "supply_volatility": 0.2,
-      "fuel_price_modifier": 0.7
+      "fuel_price_modifier": 0.6
     },
     {
       "id": "titan",
       "name": "Titan Research Base",
-      "description": "Remote scientific outpost. High demand for everything, but medicine sells well.",
+      "description": "Remote scientific outpost studying alien artifacts. Researchers pay premium for food and luxury, but produce cutting-edge tech.",
+      "archetype": "research",
+      "produces": ["medicine", "tech", "artifacts"],
+      "consumes": ["grain", "luxury"],
+      "inspection_chance": 0.2,
       "unlock_day": 0,
       "category": "outer_system",
       "distance_from": {
@@ -434,36 +582,52 @@
         "pluto": 6
       },
       "price_modifiers": {
-        "food": 2.0,
         "ore": 1.4,
-        "tech": 1.3,
-        "luxury": 1.8,
-        "fuel_cells": 1.1,
-        "medicine": 2.2
+        "grain": 2.0,
+        "fuel": 1.0,
+        "parts": 1.2,
+        "medicine": 0.5,
+        "tech": 0.6,
+        "entertainment": 1.6,
+        "artifacts": 0.5,
+        "luxury": 2.2,
+        "contraband": 1.4
       },
       "base_stock": {
-        "food": 100,
-        "ore": 80,
-        "tech": 120,
-        "luxury": 50,
-        "fuel_cells": 200,
-        "medicine": 60
+        "ore": 35,
+        "grain": 25,
+        "fuel": 80,
+        "parts": 45,
+        "medicine": 200,
+        "tech": 180,
+        "entertainment": 30,
+        "artifacts": 60,
+        "luxury": 20,
+        "contraband": 0
       },
       "stock_regen_rate": {
-        "food": 10,
-        "ore": 8,
-        "tech": 12,
-        "luxury": 5,
-        "fuel_cells": 20,
-        "medicine": 6
+        "ore": 3,
+        "grain": 2,
+        "fuel": 6,
+        "parts": 4,
+        "medicine": 18,
+        "tech": 16,
+        "entertainment": 2,
+        "artifacts": 5,
+        "luxury": 2,
+        "contraband": 0
       },
-      "supply_volatility": 0.25,
-      "fuel_price_modifier": 1.2
+      "supply_volatility": 0.22,
+      "fuel_price_modifier": 1.1
     },
     {
       "id": "neptune",
       "name": "Neptune Orbital Platform",
-      "description": "Remote gas harvesting facility. Extreme distances mean everything is expensive except fuel.",
+      "description": "Remote gas harvesting and smuggling hub. Officially it's just fuel production. Unofficially... well, don't ask.",
+      "archetype": "gas_giant",
+      "produces": ["fuel"],
+      "consumes": ["grain", "luxury", "entertainment"],
+      "inspection_chance": 0.05,
       "unlock_day": 25,
       "category": "outer_system",
       "distance_from": {
@@ -480,28 +644,40 @@
         "pluto": 3
       },
       "price_modifiers": {
-        "food": 2.2,
-        "ore": 1.6,
+        "ore": 1.5,
+        "grain": 2.3,
+        "fuel": 0.3,
+        "parts": 1.4,
+        "medicine": 1.8,
         "tech": 1.5,
-        "luxury": 2.5,
-        "fuel_cells": 0.35,
-        "medicine": 2.0
+        "entertainment": 2.2,
+        "artifacts": 1.8,
+        "luxury": 2.6,
+        "contraband": 0.35
       },
       "base_stock": {
-        "food": 80,
-        "ore": 50,
-        "tech": 60,
-        "luxury": 30,
-        "fuel_cells": 900,
-        "medicine": 40
+        "ore": 30,
+        "grain": 20,
+        "fuel": 380,
+        "parts": 40,
+        "medicine": 25,
+        "tech": 35,
+        "entertainment": 20,
+        "artifacts": 0,
+        "luxury": 15,
+        "contraband": 100
       },
       "stock_regen_rate": {
-        "food": 8,
-        "ore": 5,
-        "tech": 6,
-        "luxury": 3,
-        "fuel_cells": 90,
-        "medicine": 4
+        "ore": 2,
+        "grain": 2,
+        "fuel": 38,
+        "parts": 3,
+        "medicine": 2,
+        "tech": 3,
+        "entertainment": 2,
+        "artifacts": 0,
+        "luxury": 1,
+        "contraband": 10
       },
       "supply_volatility": 0.25,
       "fuel_price_modifier": 0.35
@@ -509,7 +685,11 @@
     {
       "id": "pluto",
       "name": "Pluto Research Outpost",
-      "description": "Edge of the solar system. Cutting-edge research facility. Everything fetches premium prices this far out.",
+      "description": "Edge of the solar system. Studying ancient alien artifacts that whisper strange things. Scientists pay obscene prices for comfort.",
+      "archetype": "research",
+      "produces": ["medicine", "tech", "artifacts"],
+      "consumes": ["grain", "luxury", "entertainment"],
+      "inspection_chance": 0.15,
       "unlock_day": 35,
       "category": "outer_system",
       "distance_from": {
@@ -526,31 +706,43 @@
         "neptune": 3
       },
       "price_modifiers": {
-        "food": 2.5,
-        "ore": 1.8,
-        "tech": 1.8,
+        "ore": 1.6,
+        "grain": 2.5,
+        "fuel": 1.2,
+        "parts": 1.5,
+        "medicine": 0.5,
+        "tech": 0.55,
+        "entertainment": 2.4,
+        "artifacts": 0.4,
         "luxury": 2.8,
-        "fuel_cells": 1.3,
-        "medicine": 2.8
+        "contraband": 1.5
       },
       "base_stock": {
-        "food": 50,
-        "ore": 30,
-        "tech": 40,
-        "luxury": 20,
-        "fuel_cells": 100,
-        "medicine": 30
+        "ore": 20,
+        "grain": 15,
+        "fuel": 50,
+        "parts": 30,
+        "medicine": 150,
+        "tech": 140,
+        "entertainment": 15,
+        "artifacts": 80,
+        "luxury": 10,
+        "contraband": 0
       },
       "stock_regen_rate": {
-        "food": 5,
-        "ore": 3,
-        "tech": 4,
-        "luxury": 2,
-        "fuel_cells": 10,
-        "medicine": 3
+        "ore": 2,
+        "grain": 1,
+        "fuel": 4,
+        "parts": 2,
+        "medicine": 14,
+        "tech": 12,
+        "entertainment": 1,
+        "artifacts": 7,
+        "luxury": 1,
+        "contraband": 0
       },
-      "supply_volatility": 0.3,
-      "fuel_price_modifier": 1.5
+      "supply_volatility": 0.28,
+      "fuel_price_modifier": 1.4
     }
   ]
 }

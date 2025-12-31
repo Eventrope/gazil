@@ -1,52 +1,114 @@
 {
   "commodities": [
     {
-      "id": "food",
-      "name": "Food Supplies",
-      "base_price": 50,
-      "weight_per_unit": 2,
-      "legality": "legal",
-      "description": "Basic rations and preserved goods. Everyone needs to eat."
-    },
-    {
       "id": "ore",
-      "name": "Raw Ore",
-      "base_price": 30,
+      "name": "Sparkle Rocks",
+      "category": "Ore",
+      "base_price": 25,
       "weight_per_unit": 5,
+      "volatility": "low",
       "legality": "legal",
-      "description": "Unprocessed minerals for manufacturing. Heavy but cheap."
+      "exclusive_to": [],
+      "description": "Unprocessed minerals that glitter enticingly. Heavy but cheap. Mining worlds have mountains of the stuff."
     },
     {
-      "id": "tech",
-      "name": "Tech Components",
-      "base_price": 150,
-      "weight_per_unit": 1,
+      "id": "grain",
+      "name": "Space Wheat",
+      "category": "Food",
+      "base_price": 30,
+      "weight_per_unit": 4,
+      "volatility": "low",
       "legality": "legal",
-      "description": "Advanced electronics and machinery parts. Light and valuable."
+      "exclusive_to": [],
+      "description": "Genetically modified to grow in low gravity. Tastes like regular wheat but with a hint of existential dread."
     },
     {
-      "id": "luxury",
-      "name": "Luxury Goods",
-      "base_price": 300,
-      "weight_per_unit": 2,
-      "legality": "legal",
-      "description": "Fine wines, jewelry, and entertainment. The colonies crave comfort."
-    },
-    {
-      "id": "fuel_cells",
-      "name": "Fuel Cells",
-      "base_price": 80,
+      "id": "fuel",
+      "name": "Gloop Juice",
+      "category": "Fuel",
+      "base_price": 50,
       "weight_per_unit": 3,
+      "volatility": "low",
       "legality": "legal",
-      "description": "Portable energy storage. Essential for ships and stations."
+      "exclusive_to": [],
+      "description": "Refined hydrogen slurry. Gas giants produce it cheaply. Don't drink it. Seriously."
+    },
+    {
+      "id": "parts",
+      "name": "Clanky Bits",
+      "category": "Parts",
+      "base_price": 75,
+      "weight_per_unit": 2,
+      "volatility": "medium",
+      "legality": "legal",
+      "exclusive_to": [],
+      "description": "Gears, servos, and mysterious components. Industrial planets churn these out by the shipload."
     },
     {
       "id": "medicine",
-      "name": "Medical Supplies",
-      "base_price": 200,
+      "name": "Glowing Pills",
+      "category": "Medicine",
+      "base_price": 100,
       "weight_per_unit": 1,
+      "volatility": "medium",
       "legality": "legal",
-      "description": "Pharmaceuticals and medical equipment. Always in demand."
+      "exclusive_to": [],
+      "description": "Advanced pharmaceuticals. The glow is supposedly harmless. Research outposts synthesize the good stuff."
+    },
+    {
+      "id": "tech",
+      "name": "Blinky Boxes",
+      "category": "Tech",
+      "base_price": 120,
+      "weight_per_unit": 1,
+      "volatility": "medium",
+      "legality": "legal",
+      "exclusive_to": [],
+      "description": "Cutting-edge electronics with lots of blinking lights. Nobody knows what most of them do."
+    },
+    {
+      "id": "entertainment",
+      "name": "Fun Cubes",
+      "category": "Entertainment",
+      "base_price": 180,
+      "weight_per_unit": 1,
+      "volatility": "high",
+      "legality": "legal",
+      "exclusive_to": [],
+      "description": "Holographic entertainment devices. Colonists pay premium prices to forget they live in space."
+    },
+    {
+      "id": "artifacts",
+      "name": "Ancient Junk",
+      "category": "Artifacts",
+      "base_price": 250,
+      "weight_per_unit": 1,
+      "volatility": "high",
+      "legality": "legal",
+      "exclusive_to": ["titan", "pluto"],
+      "description": "Mysterious relics from... somewhere. Scientists insist they're valuable. Only found at outer research stations."
+    },
+    {
+      "id": "luxury",
+      "name": "Shiny Things",
+      "category": "Luxury",
+      "base_price": 300,
+      "weight_per_unit": 1,
+      "volatility": "very_high",
+      "legality": "legal",
+      "exclusive_to": [],
+      "description": "Jewelry, rare wines, and imported delicacies. Rich colonists can't resist them."
+    },
+    {
+      "id": "contraband",
+      "name": "Definitely Not Illegal",
+      "category": "???",
+      "base_price": 400,
+      "weight_per_unit": 1,
+      "volatility": "extreme",
+      "legality": "contraband",
+      "exclusive_to": ["ceres", "neptune"],
+      "description": "Packages marked 'TOTALLY LEGAL GOODS.' Contents unknown. High profit, higher risk."
     }
   ]
 }

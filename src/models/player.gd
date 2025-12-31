@@ -5,6 +5,7 @@ var credits: int
 var current_planet: String
 var ship: Ship
 var cargo: Dictionary  # {commodity_id: quantity}
+var cargo_purchase_prices: Dictionary  # {commodity_id: avg_price_per_unit}
 var fuel: int
 var day: int
 var statistics: Dictionary
@@ -36,6 +37,7 @@ func _init() -> void:
 	current_planet = "earth"
 	ship = null
 	cargo = {}
+	cargo_purchase_prices = {}
 	fuel = 50
 	day = 1
 	statistics = {
@@ -43,15 +45,19 @@ func _init() -> void:
 		"distance_traveled": 0,
 		"events_survived": 0,
 		"credits_earned": 0,
-		"credits_spent": 0
+		"credits_spent": 0,
+		"total_profit": 0
 	}
 
 func get_cargo_weight() -> int:
 	var total := 0
 	for commodity_id in cargo:
 		var qty: int = cargo[commodity_id]
-		# Will need DataRepo to get weight - for now assume 2 per unit avg
-		total += qty * 2
+		var commodity: Commodity = DataRepo.get_commodity(commodity_id)
+		if commodity:
+			total += qty * commodity.weight_per_unit
+		else:
+			total += qty * 2  # Fallback
 	return total
 
 func get_cargo_space_used() -> int:
@@ -62,11 +68,21 @@ func get_cargo_space_free() -> int:
 		return 0
 	return ship.cargo_tonnes - get_cargo_space_used()
 
-func add_cargo(commodity_id: String, quantity: int) -> void:
+func add_cargo(commodity_id: String, quantity: int, price_per_unit: int = 0) -> void:
+	var old_qty: int = cargo.get(commodity_id, 0)
+	var old_avg: int = cargo_purchase_prices.get(commodity_id, 0)
+
 	if cargo.has(commodity_id):
 		cargo[commodity_id] += quantity
 	else:
 		cargo[commodity_id] = quantity
+
+	# Update average purchase price (weighted average)
+	if price_per_unit > 0:
+		var new_qty: int = cargo[commodity_id]
+		var total_value: int = (old_qty * old_avg) + (quantity * price_per_unit)
+		cargo_purchase_prices[commodity_id] = total_value / new_qty
+
 	cargo_changed.emit()
 
 func remove_cargo(commodity_id: String, quantity: int) -> bool:
@@ -77,8 +93,12 @@ func remove_cargo(commodity_id: String, quantity: int) -> bool:
 	cargo[commodity_id] -= quantity
 	if cargo[commodity_id] <= 0:
 		cargo.erase(commodity_id)
+		cargo_purchase_prices.erase(commodity_id)
 	cargo_changed.emit()
 	return true
+
+func get_purchase_price(commodity_id: String) -> int:
+	return cargo_purchase_prices.get(commodity_id, 0)
 
 func get_cargo_quantity(commodity_id: String) -> int:
 	return cargo.get(commodity_id, 0)
@@ -279,6 +299,7 @@ func to_dict() -> Dictionary:
 		"current_planet": current_planet,
 		"ship": ship.to_dict() if ship else {},
 		"cargo": cargo.duplicate(),
+		"cargo_purchase_prices": cargo_purchase_prices.duplicate(),
 		"fuel": fuel,
 		"day": day,
 		"statistics": statistics.duplicate(),
@@ -300,6 +321,7 @@ static func from_dict(data: Dictionary) -> Player:
 	player.credits = data.get("credits", 1000)
 	player.current_planet = data.get("current_planet", "earth")
 	player.cargo = data.get("cargo", {})
+	player.cargo_purchase_prices = data.get("cargo_purchase_prices", {})
 	player.fuel = data.get("fuel", 50)
 	player.day = data.get("day", 1)
 	player.statistics = data.get("statistics", player.statistics)

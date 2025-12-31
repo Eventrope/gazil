@@ -311,6 +311,103 @@ func _check_breakdown() -> Dictionary:
 		"extra_days": extra_days
 	}
 
+func _check_contraband_inspection(destination: Planet) -> Dictionary:
+	# Check if player has contraband
+	var contraband_qty := player.get_cargo_quantity("contraband")
+	if contraband_qty <= 0:
+		return {"inspected": false}
+
+	# Roll for inspection based on planet's inspection chance
+	if randf() > destination.inspection_chance:
+		return {"inspected": false}
+
+	# Inspection triggered - return info for UI to handle
+	var contraband := DataRepo.get_commodity("contraband")
+	var value := 0
+	if contraband:
+		value = get_price_at(destination.id, "contraband") * contraband_qty
+
+	var fine := int(value * 0.5)  # 50% of goods value as fine
+
+	return {
+		"inspected": true,
+		"contraband_qty": contraband_qty,
+		"contraband_value": value,
+		"fine": fine,
+		"planet_name": destination.planet_name
+	}
+
+func confiscate_contraband(pay_fine: bool) -> Dictionary:
+	# Called when player chooses to surrender
+	var contraband_qty := player.get_cargo_quantity("contraband")
+	if contraband_qty <= 0:
+		return {"success": false, "message": "No contraband to confiscate"}
+
+	var contraband := DataRepo.get_commodity("contraband")
+	var value := 0
+	if contraband:
+		value = get_price_at(player.current_planet, "contraband") * contraband_qty
+
+	var fine := int(value * 0.5)
+
+	# Remove contraband
+	player.remove_cargo("contraband", contraband_qty)
+
+	var message := "Contraband confiscated!"
+	if pay_fine and player.credits >= fine:
+		player.spend_credits(fine)
+		message += " Paid %d cr fine." % fine
+	elif pay_fine:
+		# Can't pay full fine - take what they have
+		var paid := player.credits
+		player.spend_credits(paid)
+		message += " Paid %d cr (couldn't afford full %d fine)." % [paid, fine]
+
+	return {"success": true, "message": message, "confiscated": contraband_qty, "fine_paid": fine}
+
+func attempt_escape() -> Dictionary:
+	# Called when player tries to run from inspection
+	# Success based on ship speed vs base chance
+	var base_escape_chance := 0.3  # 30% base
+	var speed_bonus := 0.0
+	if player.ship:
+		# Faster ships have better escape chance
+		speed_bonus = (player.ship.speed - 5) * 0.05  # +5% per speed point above 5
+
+	var escape_chance := clampf(base_escape_chance + speed_bonus, 0.1, 0.7)
+
+	if randf() < escape_chance:
+		# Escaped! But banned from planet for 10 days
+		# (Would need to track this - simplified for now)
+		return {
+			"success": true,
+			"escaped": true,
+			"message": "You outran the inspectors! But you're not welcome here for a while..."
+		}
+	else:
+		# Caught - double fine and confiscation
+		var contraband_qty := player.get_cargo_quantity("contraband")
+		var contraband := DataRepo.get_commodity("contraband")
+		var value := 0
+		if contraband:
+			value = get_price_at(player.current_planet, "contraband") * contraband_qty
+
+		var fine := int(value * 1.0)  # Double fine (100% instead of 50%)
+
+		player.remove_cargo("contraband", contraband_qty)
+		if player.credits >= fine:
+			player.spend_credits(fine)
+		else:
+			player.spend_credits(player.credits)
+
+		return {
+			"success": true,
+			"escaped": false,
+			"message": "Caught! Contraband confiscated and %d cr fine applied." % fine,
+			"confiscated": contraband_qty,
+			"fine": fine
+		}
+
 func travel_to(planet_id: String) -> Dictionary:
 	# Returns {success: bool, message: String, event: GameEvent or null}
 	if player == null:
@@ -381,6 +478,9 @@ func travel_to(planet_id: String) -> Dictionary:
 	var event_chance_modifier := NewsManager.get_event_chance_modifier(active_news_events, from_planet, planet_id)
 	var event := EventManager.roll_event("travel", event_chance_modifier)
 
+	# Check for contraband inspection at destination
+	var inspection_result := _check_contraband_inspection(destination)
+
 	var travel_msg := "Traveled to %s (-%d fuel, %d days)" % [destination.planet_name, fuel_cost, distance + extra_days]
 	if travel_modifier > 1.0:
 		travel_msg += " [Delayed by events]"
@@ -400,7 +500,8 @@ func travel_to(planet_id: String) -> Dictionary:
 		"event": event,
 		"breakdown": breakdown_result,
 		"deliveries": deliveries,
-		"bot_actions": bot_actions
+		"bot_actions": bot_actions,
+		"inspection": inspection_result
 	}
 
 func buy_commodity(commodity_id: String, quantity: int) -> Dictionary:
@@ -427,13 +528,13 @@ func buy_commodity(commodity_id: String, quantity: int) -> Dictionary:
 		return {"success": false, "message": "Not enough cargo space (need %d)" % weight}
 
 	player.spend_credits(total_cost)
-	player.add_cargo(commodity_id, quantity)
+	player.add_cargo(commodity_id, quantity, price)
 	player.statistics["trades_made"] += 1
 
 	# Reduce planet stock
 	_modify_stock(player.current_planet, commodity_id, -quantity)
 
-	return {"success": true, "message": "Bought %d %s for %d credits" % [quantity, commodity.commodity_name, total_cost]}
+	return {"success": true, "message": "Bought %d %s for %d credits" % [quantity, commodity.commodity_name, total_cost], "price_per_unit": price}
 
 func sell_commodity(commodity_id: String, quantity: int) -> Dictionary:
 	if player == null:
@@ -449,14 +550,26 @@ func sell_commodity(commodity_id: String, quantity: int) -> Dictionary:
 	var price := get_price_at(player.current_planet, commodity_id)
 	var total_value := price * quantity
 
+	# Calculate profit/loss
+	var purchase_price := player.get_purchase_price(commodity_id)
+	var cost_basis := purchase_price * quantity
+	var profit := total_value - cost_basis
+
 	player.remove_cargo(commodity_id, quantity)
 	player.add_credits(total_value)
 	player.statistics["trades_made"] += 1
+	player.statistics["total_profit"] = player.statistics.get("total_profit", 0) + profit
 
 	# Increase planet stock
 	_modify_stock(player.current_planet, commodity_id, quantity)
 
-	return {"success": true, "message": "Sold %d %s for %d credits" % [quantity, commodity.commodity_name, total_value]}
+	var profit_str := ""
+	if profit > 0:
+		profit_str = " (+%d profit)" % profit
+	elif profit < 0:
+		profit_str = " (%d loss)" % profit
+
+	return {"success": true, "message": "Sold %d %s for %d credits%s" % [quantity, commodity.commodity_name, total_value, profit_str], "profit": profit}
 
 func buy_upgrade(upgrade_id: String) -> Dictionary:
 	if player == null:
