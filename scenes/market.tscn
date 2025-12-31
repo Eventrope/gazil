@@ -138,11 +138,4 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Back to Map"
 
-[node name="MainMenuButton" type="Button" parent="MarginContainer/VBoxContainer/Footer"]
-custom_minimum_size = Vector2(150, 45)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Main Menu"
-
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Footer/BackButton" to="." method="_on_back_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Footer/MainMenuButton" to="." method="_on_main_menu_pressed"]

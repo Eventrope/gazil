@@ -1,0 +1,345 @@
+[gd_scene load_steps=2 format=3 uid="uid://corp_office"]
+
+[ext_resource type="Script" path="res://scripts/corporation_office.gd" id="1_corp"]
+
+[node name="CorporationOffice" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_corp")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.08, 0.12, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+text = "Corporation Office"
+
+[node name="CreditsLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Credits: 1,000"
+
+[node name="CargoLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Cargo: 0/100"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Available Contracts" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CorpFilter" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts"]
+layout_mode = 2
+
+[node name="FilterLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/CorpFilter"]
+layout_mode = 2
+text = "Filter by Corp:"
+
+[node name="CorpFilterOption" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/CorpFilter"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 0)
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/CorpFilter"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RefreshLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/CorpFilter"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "Contracts refresh when you arrive at a planet"
+
+[node name="ContractTableHeader" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="CorpHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/ContractTableHeader"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "CORP"
+
+[node name="TypeHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/ContractTableHeader"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "TYPE"
+
+[node name="DescHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/ContractTableHeader"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "DESCRIPTION"
+
+[node name="RewardHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/ContractTableHeader"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "REWARD"
+horizontal_alignment = 1
+
+[node name="DeadlineHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/ContractTableHeader"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "DEADLINE"
+horizontal_alignment = 1
+
+[node name="ActionHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/ContractTableHeader"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "ACTION"
+horizontal_alignment = 1
+
+[node name="AvailableScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AvailableContractsList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Available Contracts/AvailableScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="Active Contracts" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ActiveTableHeader" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Active Contracts"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="CorpHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Active Contracts/ActiveTableHeader"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "CORP"
+
+[node name="TypeHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Active Contracts/ActiveTableHeader"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "TYPE"
+
+[node name="DescHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Active Contracts/ActiveTableHeader"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "DESCRIPTION"
+
+[node name="RewardHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Active Contracts/ActiveTableHeader"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "REWARD"
+horizontal_alignment = 1
+
+[node name="DaysLeftHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Active Contracts/ActiveTableHeader"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "DAYS LEFT"
+horizontal_alignment = 1
+
+[node name="ActionHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Active Contracts/ActiveTableHeader"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "ACTION"
+horizontal_alignment = 1
+
+[node name="ActiveScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/TabContainer/Active Contracts"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ActiveContractsList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Active Contracts/ActiveScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="Corporation Standings" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StandingsTableHeader" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Corporation Standings"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="CorpHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Corporation Standings/StandingsTableHeader"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "CORPORATION"
+
+[node name="StandingHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Corporation Standings/StandingsTableHeader"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "STANDING"
+horizontal_alignment = 1
+
+[node name="LevelHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Corporation Standings/StandingsTableHeader"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "LEVEL"
+horizontal_alignment = 1
+
+[node name="PresenceHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Corporation Standings/StandingsTableHeader"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "PRESENCE HERE"
+horizontal_alignment = 1
+
+[node name="SpecialtyHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Corporation Standings/StandingsTableHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "SPECIALTY"
+
+[node name="StandingsScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/TabContainer/Corporation Standings"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StandingsList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Corporation Standings/StandingsScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="Sealed Cargo" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SealedInfo" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Sealed Cargo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "Sealed cargo from corporation contracts. Contents unknown until delivery or inspection."
+
+[node name="SealedTableHeader" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Sealed Cargo"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="ContractHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Sealed Cargo/SealedTableHeader"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "CONTRACT"
+
+[node name="WeightHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Sealed Cargo/SealedTableHeader"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "WEIGHT"
+horizontal_alignment = 1
+
+[node name="StatusHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Sealed Cargo/SealedTableHeader"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "STATUS"
+horizontal_alignment = 1
+
+[node name="ActionHeader" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Sealed Cargo/SealedTableHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "ACTION"
+
+[node name="SealedScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/TabContainer/Sealed Cargo"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SealedCargoList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Sealed Cargo/SealedScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Footer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="MessageLabel" type="Label" parent="MarginContainer/VBoxContainer/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = ""
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/Footer"]
+custom_minimum_size = Vector2(150, 45)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Back to Map"
+
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/TabContainer/Available Contracts/CorpFilter/CorpFilterOption" to="." method="_on_corp_filter_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Footer/BackButton" to="." method="_on_back_pressed"]

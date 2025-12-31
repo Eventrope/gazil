@@ -56,7 +56,14 @@ func _build_commodity_rows() -> void:
 func _create_commodity_row(commodity: Commodity) -> PanelContainer:
 	var panel := PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.12, 0.16, 1.0)
+
+	# Check for active embargo on this commodity at this planet
+	var has_embargo := _check_embargo_warning(commodity.id)
+
+	if has_embargo:
+		style.bg_color = Color(0.18, 0.10, 0.10, 1.0)  # Red tint for embargoed
+	else:
+		style.bg_color = Color(0.12, 0.12, 0.16, 1.0)
 	style.corner_radius_top_left = 4
 	style.corner_radius_top_right = 4
 	style.corner_radius_bottom_left = 4
@@ -90,9 +97,13 @@ func _create_commodity_row(commodity: Commodity) -> PanelContainer:
 
 	var name_label := Label.new()
 	name_label.text = commodity.commodity_name
+	if has_embargo:
+		name_label.text += " [EMBARGO]"
 	name_label.add_theme_font_size_override("font_size", 15)
 	if commodity.is_contraband():
 		name_label.add_theme_color_override("font_color", Color(0.9, 0.4, 0.4))
+	elif has_embargo:
+		name_label.add_theme_color_override("font_color", Color(0.9, 0.6, 0.3))
 	name_col.add_child(name_label)
 
 	var cat_label := Label.new()
@@ -458,10 +469,24 @@ func _on_sell_pressed(commodity_id: String, quantity: int) -> void:
 func _on_back_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/galaxy_map.tscn")
 
-func _on_main_menu_pressed() -> void:
-	GameState.return_to_main_menu()
-	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-
 func _show_message(text: String, color: Color) -> void:
 	message_label.text = text
 	message_label.add_theme_color_override("font_color", color)
+
+func _check_embargo_warning(commodity_id: String) -> bool:
+	# Check if selling this commodity at this planet would violate an active embargo
+	var player := GameState.player
+	if player == null:
+		return false
+
+	for contract_data in player.active_contracts:
+		var contract := Contract.from_dict(contract_data)
+		if contract.type != Contract.Type.EMBARGO:
+			continue
+		if contract.status != Contract.Status.ACCEPTED:
+			continue
+
+		if commodity_id in contract.embargo_commodities and player.current_planet in contract.embargo_planets:
+			return true
+
+	return false
