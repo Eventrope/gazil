@@ -3,112 +3,134 @@
     {
       "id": "ore",
       "name": "Sparkle Rocks",
-      "category": "Ore",
-      "base_price": 25,
-      "weight_per_unit": 5,
+      "category": "Bulk",
+      "base_price": 18,
+      "weight_per_unit": 10,
       "volatility": "low",
       "legality": "legal",
       "exclusive_to": [],
-      "description": "Unprocessed minerals that glitter enticingly. Heavy but cheap. Mining worlds have mountains of the stuff."
+      "description": "Raw minerals hauled from asteroid belts. Heavy as sin, cheap as dirt."
+    },
+    {
+      "id": "scrap",
+      "name": "Space Junk",
+      "category": "Bulk",
+      "base_price": 12,
+      "weight_per_unit": 8,
+      "volatility": "low",
+      "legality": "legal",
+      "exclusive_to": [],
+      "description": "Salvaged ship parts and debris. One spacer's trash is another's treasure."
     },
     {
       "id": "grain",
       "name": "Space Wheat",
       "category": "Food",
-      "base_price": 30,
-      "weight_per_unit": 4,
+      "base_price": 28,
+      "weight_per_unit": 5,
       "volatility": "low",
       "legality": "legal",
       "exclusive_to": [],
-      "description": "Genetically modified to grow in low gravity. Tastes like regular wheat but with a hint of existential dread."
+      "description": "Genetically modified grain that grows in low gravity. Tastes like cardboard, sustains colonies."
     },
     {
       "id": "fuel",
       "name": "Gloop Juice",
       "category": "Fuel",
-      "base_price": 50,
-      "weight_per_unit": 3,
+      "base_price": 38,
+      "weight_per_unit": 8,
       "volatility": "low",
       "legality": "legal",
       "exclusive_to": [],
-      "description": "Refined hydrogen slurry. Gas giants produce it cheaply. Don't drink it. Seriously."
+      "description": "Refined hydrogen slurry. Smells terrible, powers everything."
     },
     {
       "id": "parts",
       "name": "Clanky Bits",
-      "category": "Parts",
-      "base_price": 75,
-      "weight_per_unit": 2,
+      "category": "Industrial",
+      "base_price": 52,
+      "weight_per_unit": 5,
       "volatility": "medium",
       "legality": "legal",
       "exclusive_to": [],
-      "description": "Gears, servos, and mysterious components. Industrial planets churn these out by the shipload."
+      "description": "Assorted mechanical components. Every ship needs them, eventually."
     },
     {
       "id": "medicine",
       "name": "Glowing Pills",
-      "category": "Medicine",
-      "base_price": 100,
-      "weight_per_unit": 1,
+      "category": "Medical",
+      "base_price": 72,
+      "weight_per_unit": 2,
       "volatility": "medium",
       "legality": "legal",
       "exclusive_to": [],
-      "description": "Advanced pharmaceuticals. The glow is supposedly harmless. Research outposts synthesize the good stuff."
+      "description": "Pharmaceuticals that may or may not glow in the dark. Side effects vary by planet."
     },
     {
       "id": "tech",
       "name": "Blinky Boxes",
       "category": "Tech",
-      "base_price": 120,
-      "weight_per_unit": 1,
+      "base_price": 88,
+      "weight_per_unit": 3,
       "volatility": "medium",
       "legality": "legal",
       "exclusive_to": [],
-      "description": "Cutting-edge electronics with lots of blinking lights. Nobody knows what most of them do."
+      "description": "Advanced electronics with lots of blinking lights. Nobody knows what half of them do."
+    },
+    {
+      "id": "machinery",
+      "name": "Big Clankers",
+      "category": "Industrial",
+      "base_price": 135,
+      "weight_per_unit": 12,
+      "volatility": "medium",
+      "legality": "legal",
+      "exclusive_to": [],
+      "description": "Heavy industrial equipment. Worth a fortune but eats your cargo hold alive."
+    },
+    {
+      "id": "spices",
+      "name": "Zesty Dust",
+      "category": "Luxury",
+      "base_price": 105,
+      "weight_per_unit": 1,
+      "volatility": "high",
+      "legality": "legal",
+      "exclusive_to": [],
+      "description": "Exotic seasonings from across the system. Light, valuable, and highly sought after."
     },
     {
       "id": "entertainment",
       "name": "Fun Cubes",
-      "category": "Entertainment",
-      "base_price": 180,
-      "weight_per_unit": 1,
+      "category": "Luxury",
+      "base_price": 155,
+      "weight_per_unit": 2,
       "volatility": "high",
       "legality": "legal",
       "exclusive_to": [],
-      "description": "Holographic entertainment devices. Colonists pay premium prices to forget they live in space."
+      "description": "Holographic entertainment devices. Workers demand them, governments fear them."
     },
     {
       "id": "artifacts",
       "name": "Ancient Junk",
-      "category": "Artifacts",
-      "base_price": 250,
-      "weight_per_unit": 1,
-      "volatility": "high",
-      "legality": "legal",
-      "exclusive_to": ["titan", "pluto"],
-      "description": "Mysterious relics from... somewhere. Scientists insist they're valuable. Only found at outer research stations."
-    },
-    {
-      "id": "luxury",
-      "name": "Shiny Things",
-      "category": "Luxury",
-      "base_price": 300,
-      "weight_per_unit": 1,
+      "category": "Rare",
+      "base_price": 210,
+      "weight_per_unit": 3,
       "volatility": "very_high",
       "legality": "legal",
-      "exclusive_to": [],
-      "description": "Jewelry, rare wines, and imported delicacies. Rich colonists can't resist them."
+      "exclusive_to": ["titan", "pluto", "europa"],
+      "description": "Mysterious relics of unknown origin. Collectors pay absurd prices. Found only at outer research stations."
     },
     {
       "id": "contraband",
-      "name": "Definitely Not Illegal",
-      "category": "???",
-      "base_price": 400,
+      "name": "Definitely Legal",
+      "category": "Contraband",
+      "base_price": 320,
       "weight_per_unit": 1,
       "volatility": "extreme",
       "legality": "contraband",
       "exclusive_to": ["ceres", "neptune"],
-      "description": "Packages marked 'TOTALLY LEGAL GOODS.' Contents unknown. High profit, higher risk."
+      "description": "Completely legitimate goods that definitely don't need to be hidden from authorities."
     }
   ]
 }

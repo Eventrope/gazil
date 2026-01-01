@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(python3:*)",
+      "Bash(for f in data/*.json)",
+      "Bash(do python3 -c \"import json; json.load\\(open\\(''$f''\\)\\); print\\(''$f: OK''\\)\")",
+      "Bash(echo:*)",
+      "Bash(done)"
     ]
   }
 }

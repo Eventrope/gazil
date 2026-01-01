@@ -46,5 +46,22 @@ func is_contraband() -> bool:
 
 func get_price_at(planet: Planet, price_drift: float = 0.0) -> int:
 	var modifier := planet.get_price_modifier(id)
-	var price := base_price * modifier * (1.0 + price_drift)
+
+	# Apply volatility-based price swing
+	# price_drift is in range [-0.5, 0.5], map it to volatility range
+	var vol_range := get_volatility_range()
+	var vol_min: float = vol_range["min"]
+	var vol_max: float = vol_range["max"]
+
+	# Map drift [-0.5, 0.5] to volatility multiplier [min, max]
+	# drift of -0.5 -> min, drift of 0 -> 1.0, drift of 0.5 -> max
+	var volatility_multiplier: float
+	if price_drift < 0:
+		# Negative drift: interpolate from min to 1.0
+		volatility_multiplier = lerpf(1.0, vol_min, absf(price_drift) * 2.0)
+	else:
+		# Positive drift: interpolate from 1.0 to max
+		volatility_multiplier = lerpf(1.0, vol_max, price_drift * 2.0)
+
+	var price := base_price * modifier * volatility_multiplier
 	return int(max(1, round(price)))

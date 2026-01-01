@@ -165,6 +165,7 @@ func _create_commodity_row(commodity: Commodity) -> PanelContainer:
 	
 	var current_planet: String = GameState.player.current_planet
 	var price: int = GameState.get_price_at(current_planet, commodity.id)
+	var sell_price: int = GameState.get_sell_price_at(current_planet, commodity.id)
 	var owned: int = GameState.player.get_cargo_quantity(commodity.id)
 	var stock: int = GameState.get_stock_at(current_planet, commodity.id)
 	var planet: Planet = DataRepo.get_planet(current_planet)
@@ -221,10 +222,11 @@ func _create_commodity_row(commodity: Commodity) -> PanelContainer:
 	price_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	if is_available:
+		# Show buy price with sell price in smaller text
 		price_label.text = "%d cr" % price
 		var price_color: Color = _get_quality_color(quality)
 		price_label.add_theme_color_override("font_color", price_color)
-		
+
 		# News indicator
 		var news_effects: Dictionary = NewsManager.get_combined_effects(
 			GameState.get_active_news_events(), current_planet, commodity.id
@@ -236,19 +238,17 @@ func _create_commodity_row(commodity: Commodity) -> PanelContainer:
 	else:
 		price_label.text = "N/A"
 		price_label.add_theme_color_override("font_color", COLOR_TEXT_DIM)
-	
+
 	price_col.add_child(price_label)
-	
-	var min_price: int = price_range["min_price"]
-	var max_price: int = price_range["max_price"]
-	var range_str: String = "(%d-%d)" % [min_price, max_price]
-	var range_lbl := Label.new()
-	range_lbl.text = range_str
-	range_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	range_lbl.add_theme_font_size_override("font_size", 10)
-	range_lbl.add_theme_color_override("font_color", Color(0.4, 0.42, 0.48))
-	range_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	price_col.add_child(range_lbl)
+
+	# Show sell price (95% of buy) below
+	var sell_lbl := Label.new()
+	sell_lbl.text = "sell: %d" % sell_price
+	sell_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sell_lbl.add_theme_font_size_override("font_size", 10)
+	sell_lbl.add_theme_color_override("font_color", Color(0.5, 0.5, 0.55))
+	sell_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	price_col.add_child(sell_lbl)
 	
 	row.add_child(price_col)
 	
@@ -267,10 +267,10 @@ func _create_commodity_row(commodity: Commodity) -> PanelContainer:
 		owned_label.text = "%d" % owned
 		owned_label.add_theme_color_override("font_color", Color(0.5, 0.85, 0.5))
 		owned_col.add_child(owned_label)
-		
-		# Profit/loss indicator
+
+		# Profit/loss indicator (uses sell price, not buy price)
 		var profit_label := Label.new()
-		var potential_profit: int = (price - purchase_price) * owned
+		var potential_profit: int = (sell_price - purchase_price) * owned
 		if potential_profit > 0:
 			profit_label.text = "+%d" % potential_profit
 			profit_label.add_theme_color_override("font_color", COLOR_PROFIT)

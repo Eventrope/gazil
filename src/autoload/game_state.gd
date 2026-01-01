@@ -8,6 +8,7 @@ const SAVE_VERSION := 5  # v5: Added corporations, contracts, sealed cargo
 const SAVINGS_INTEREST_RATE := 0.002  # 0.2% per day
 const BASE_LOAN_RATE := 0.01  # 1% per day
 const LOAN_DURATION_DAYS := 30
+const SELL_SPREAD := 0.95  # Sell price is 95% of buy price (5% transaction cost)
 
 var player: Player = null
 var price_drifts: Dictionary = {}  # {planet_id: {commodity_id: float}}
@@ -122,6 +123,11 @@ func get_price_at(planet_id: String, commodity_id: String) -> int:
 	var base_price: int = commodity.get_price_at(planet, drift)
 	var final_price: int = int(max(1, round(base_price * news_modifier * stock_effect)))
 	return final_price
+
+func get_sell_price_at(planet_id: String, commodity_id: String) -> int:
+	# Sell price is 95% of buy price (5% spread)
+	var buy_price: int = get_price_at(planet_id, commodity_id)
+	return int(max(1, round(buy_price * SELL_SPREAD)))
 
 func advance_day(days: int = 1) -> void:
 	if player == null:
@@ -601,11 +607,12 @@ func sell_commodity(commodity_id: String, quantity: int) -> Dictionary:
 	if player.get_cargo_quantity(commodity_id) < quantity:
 		return {"success": false, "message": "Not enough cargo"}
 
-	var price := get_price_at(player.current_planet, commodity_id)
-	var total_value := price * quantity
+	# Use sell price (95% of buy price due to spread)
+	var price: int = get_sell_price_at(player.current_planet, commodity_id)
+	var total_value: int = price * quantity
 
 	# Calculate profit/loss
-	var purchase_price := player.get_purchase_price(commodity_id)
+	var purchase_price: int = player.get_purchase_price(commodity_id)
 	var cost_basis := purchase_price * quantity
 	var profit := total_value - cost_basis
 

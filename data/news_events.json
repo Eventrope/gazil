@@ -34,7 +34,7 @@
       "weight": 0.8,
       "effects": {
         "planets": ["venus", "saturn"],
-        "commodities": ["luxury", "entertainment"],
+        "commodities": ["spices", "entertainment"],
         "price_modifier": 1.7,
         "stock_modifier": 0.4,
         "travel_time_modifier": 1.0,
@@ -172,7 +172,7 @@
       "weight": 0.5,
       "effects": {
         "planets": "*",
-        "commodities": ["luxury"],
+        "commodities": ["spices"],
         "price_modifier": 1.6,
         "stock_modifier": 0.5,
         "travel_time_modifier": 1.0,
