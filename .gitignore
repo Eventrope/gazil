@@ -9,7 +9,7 @@
 # Imported translations (comment out these two lines if you wish to ignore changes to imported translations)
 # *.import
 
-# Mono-specific (for C# projects, uncomment if using C#)
+# Mono-spec~ific (for C# projects, uncomment if using C#)
 # .mono/
 # data_*/
 # mono_crash.*.json
@@ -21,7 +21,7 @@
 ._*
 .Spotlight-V100
 .Trashes
-ehthumbs.db
+ehthumbs.db``
 Thumbs.db
 
 # Windows
@@ -61,4 +61,5 @@ export/
 
 # User-specific files
 user://
+
 

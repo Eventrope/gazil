@@ -1,0 +1,275 @@
+[gd_scene load_steps=2 format=3 uid="uid://bank"]
+
+[ext_resource type="Script" path="res://scripts/bank.gd" id="1_bank"]
+
+[node name="Bank" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bank")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.07, 0.1, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.9, 0.8, 0.4, 1)
+text = "GALACTIC BANK"
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CreditsLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Cash: 1,000 cr"
+
+[node name="BalanceLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.4, 0.8, 0.4, 1)
+text = "Savings: 0 cr"
+
+[node name="RatingLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Credit Rating: Average (100)"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ContentContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="SavingsPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="SavingsTitle" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.4, 0.8, 0.4, 1)
+text = "SAVINGS ACCOUNT"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="BalanceLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "Current Balance:"
+horizontal_alignment = 1
+
+[node name="SavingsAmount" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.4, 0.9, 0.4, 1)
+text = "0 cr"
+horizontal_alignment = 1
+
+[node name="InterestInfo" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.5, 0.7, 0.5, 1)
+text = "Earns ~0 cr/day (0.2%)"
+horizontal_alignment = 1
+
+[node name="Spacer1" type="Control" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 20)
+
+[node name="DepositRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="DepositLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/DepositRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Deposit:"
+
+[node name="DepositInput" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/DepositRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(150, 40)
+max_value = 100000.0
+suffix = " cr"
+
+[node name="DepositButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/DepositRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(100, 40)
+theme_override_font_sizes/font_size = 14
+text = "Deposit"
+
+[node name="DepositAllButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/DepositRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(60, 40)
+theme_override_font_sizes/font_size = 14
+text = "All"
+
+[node name="WithdrawRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="WithdrawLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/WithdrawRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Withdraw:"
+
+[node name="WithdrawInput" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/WithdrawRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(150, 40)
+max_value = 100000.0
+suffix = " cr"
+
+[node name="WithdrawButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/WithdrawRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(100, 40)
+theme_override_font_sizes/font_size = 14
+text = "Withdraw"
+
+[node name="WithdrawAllButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/WithdrawRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(60, 40)
+theme_override_font_sizes/font_size = 14
+text = "All"
+
+[node name="LoansPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="LoansTitle" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
+text = "LOANS"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ActiveLoansLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "Active Loans:"
+
+[node name="LoanList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="NewLoanContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="NewLoanTitle" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer/NewLoanContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8, 0.8, 0.9, 1)
+text = "Take New Loan:"
+
+[node name="LoanAmountRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer/NewLoanContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="AmountLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer/NewLoanContainer/LoanAmountRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Amount:"
+
+[node name="LoanAmountInput" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer/NewLoanContainer/LoanAmountRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 40)
+min_value = 100.0
+max_value = 15000.0
+step = 100.0
+value = 1000.0
+suffix = " cr"
+
+[node name="LoanInfoLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer/NewLoanContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "Rate: 1.0%/day (~10 cr/day) | Due in 30 days"
+horizontal_alignment = 1
+
+[node name="TakeLoanButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer/NewLoanContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 45)
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 16
+text = "Take Loan"
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Footer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="MessageLabel" type="Label" parent="MarginContainer/VBoxContainer/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = ""
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/Footer"]
+layout_mode = 2
+custom_minimum_size = Vector2(150, 45)
+theme_override_font_sizes/font_size = 18
+text = "Back to Map"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/DepositRow/DepositButton" to="." method="_on_deposit_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/DepositRow/DepositAllButton" to="." method="_on_deposit_all_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/WithdrawRow/WithdrawButton" to="." method="_on_withdraw_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ContentContainer/SavingsPanel/VBoxContainer/WithdrawRow/WithdrawAllButton" to="." method="_on_withdraw_all_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ContentContainer/LoansPanel/VBoxContainer/NewLoanContainer/TakeLoanButton" to="." method="_on_take_loan_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Footer/BackButton" to="." method="_on_back_pressed"]

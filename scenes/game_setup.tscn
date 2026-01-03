@@ -1,0 +1,130 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3gamesetup"]
+
+[ext_resource type="Script" path="res://scripts/game_setup.gd" id="1_script"]
+
+[node name="GameSetup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "New Game Setup"
+horizontal_alignment = 1
+
+[node name="ModeContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ModeLabel" type="Label" parent="CenterContainer/VBoxContainer/ModeContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Game Mode:"
+
+[node name="ModeOption" type="OptionButton" parent="CenterContainer/VBoxContainer/ModeContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="CompetitionSettings" type="VBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Separator" type="HSeparator" parent="CenterContainer/VBoxContainer/CompetitionSettings"]
+layout_mode = 2
+
+[node name="CompetitionLabel" type="Label" parent="CenterContainer/VBoxContainer/CompetitionSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Competition Settings"
+horizontal_alignment = 1
+
+[node name="BotCountContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer/CompetitionSettings"]
+layout_mode = 2
+
+[node name="BotCountTitle" type="Label" parent="CenterContainer/VBoxContainer/CompetitionSettings/BotCountContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Opponents:"
+
+[node name="BotCountSlider" type="HSlider" parent="CenterContainer/VBoxContainer/CompetitionSettings/BotCountContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+
+[node name="BotCountLabel" type="Label" parent="CenterContainer/VBoxContainer/CompetitionSettings/BotCountContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "5 Opponents"
+
+[node name="DifficultyContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer/CompetitionSettings"]
+layout_mode = 2
+
+[node name="DifficultyLabel" type="Label" parent="CenterContainer/VBoxContainer/CompetitionSettings/DifficultyContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Difficulty:"
+
+[node name="DifficultyOption" type="OptionButton" parent="CenterContainer/VBoxContainer/CompetitionSettings/DifficultyContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="GameLengthContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer/CompetitionSettings"]
+layout_mode = 2
+
+[node name="GameLengthLabel" type="Label" parent="CenterContainer/VBoxContainer/CompetitionSettings/GameLengthContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Game Length:"
+
+[node name="GameLengthOption" type="OptionButton" parent="CenterContainer/VBoxContainer/CompetitionSettings/GameLengthContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="DebugContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer/CompetitionSettings"]
+layout_mode = 2
+
+[node name="DebugLabel" type="Label" parent="CenterContainer/VBoxContainer/CompetitionSettings/DebugContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Debug Mode:"
+
+[node name="DebugCheck" type="CheckBox" parent="CenterContainer/VBoxContainer/CompetitionSettings/DebugContainer"]
+layout_mode = 2
+text = "Show bot reasoning"
+
+[node name="Separator2" type="HSeparator" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="BackButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Back"
+
+[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Start Game"
+
+[connection signal="item_selected" from="CenterContainer/VBoxContainer/ModeContainer/ModeOption" to="." method="_on_mode_option_item_selected"]
+[connection signal="value_changed" from="CenterContainer/VBoxContainer/CompetitionSettings/BotCountContainer/BotCountSlider" to="." method="_on_bot_count_slider_value_changed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ButtonContainer/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ButtonContainer/StartButton" to="." method="_on_start_pressed"]

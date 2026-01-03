@@ -1,0 +1,142 @@
+{
+  "bots": [
+    {
+      "id": "captain_vex",
+      "name": "Captain Vex",
+      "personality": "vulture",
+      "color": "#e74c3c",
+      "backstory": "Former insurance adjuster who 'retired' after discovering how profitable disaster capitalism could be. Whispers 'soon' to cargo crates."
+    },
+    {
+      "id": "zara_kell",
+      "name": "Zara Kell",
+      "personality": "speedrunner",
+      "color": "#3498db",
+      "backstory": "Holds the record for most trades in a single day. Hasn't slept in three years. Claims coffee is a personality."
+    },
+    {
+      "id": "blorgg",
+      "name": "Blorgg the Inexplicable",
+      "personality": "gambler",
+      "color": "#9b59b6",
+      "backstory": "An alien whose species communicates through risky financial decisions. Nobody understands their logic, including Blorgg."
+    },
+    {
+      "id": "steady_susan",
+      "name": "Steady Susan",
+      "personality": "steady",
+      "color": "#2ecc71",
+      "backstory": "Former accountant who found spreadsheets insufficiently thrilling. Now does the exact same thing but in space."
+    },
+    {
+      "id": "rex_danger",
+      "name": "Rex Danger",
+      "personality": "gambler",
+      "color": "#f39c12",
+      "backstory": "Changed his name legally to match his trading style. His previous name was Harold Sensible."
+    },
+    {
+      "id": "the_whisper",
+      "name": "The Whisper",
+      "personality": "vulture",
+      "color": "#1abc9c",
+      "backstory": "Nobody knows their real name or face. Always arrives exactly when you least expect them, usually with better prices."
+    },
+    {
+      "id": "nova_quick",
+      "name": "Nova Quick",
+      "personality": "speedrunner",
+      "color": "#e91e63",
+      "backstory": "Genetically modified for impatience. Once sold cargo mid-hyperspace because waiting was 'unbearable.'"
+    },
+    {
+      "id": "old_reliable",
+      "name": "Old Reliable",
+      "personality": "steady",
+      "color": "#607d8b",
+      "backstory": "Has been trading the same route for 40 years. Still profitable. Refuses to explain why they won't try anything new."
+    },
+    {
+      "id": "lucky_jim",
+      "name": "Lucky Jim",
+      "personality": "gambler",
+      "color": "#ff5722",
+      "backstory": "Survived 17 pirate attacks, 3 asteroid collisions, and bankruptcy twice. Still convinced their luck is 'due to turn around.'"
+    },
+    {
+      "id": "merchant_prime",
+      "name": "Merchant Prime",
+      "personality": "vulture",
+      "color": "#795548",
+      "backstory": "An AI that achieved consciousness and immediately developed a passion for buying low. Speaks only in profit margins."
+    }
+  ],
+  "personality_modifiers": {
+    "vulture": {
+      "min_profit_margin": 0.40,
+      "max_travel_distance": 0,
+      "cash_reserve_ratio": 0.50,
+      "willingness_to_wait": "high",
+      "volatility_preference": "high",
+      "description": "Waits for price crashes from events, buys distressed goods"
+    },
+    "speedrunner": {
+      "min_profit_margin": 0.10,
+      "max_travel_distance": 3,
+      "cash_reserve_ratio": 0.20,
+      "willingness_to_wait": "none",
+      "volatility_preference": "low",
+      "description": "Short routes, high volume, low margins"
+    },
+    "gambler": {
+      "min_profit_margin": 0.05,
+      "max_travel_distance": 0,
+      "cash_reserve_ratio": 0.0,
+      "willingness_to_wait": "low",
+      "volatility_preference": "very_high",
+      "description": "High-risk routes, volatile commodities, all-in plays"
+    },
+    "steady": {
+      "min_profit_margin": 0.25,
+      "max_travel_distance": 5,
+      "cash_reserve_ratio": 0.40,
+      "willingness_to_wait": "medium",
+      "volatility_preference": "low",
+      "description": "Reliable, predictable, consistent profits"
+    }
+  },
+  "news_templates": {
+    "major_buy": [
+      "{name} was spotted purchasing {quantity} units of {commodity}. When asked why, they simply whispered 'soon' and flew away.",
+      "MARKET ALERT: {name} just bought {quantity} {commodity} at {planet}. Competitors are concerned.",
+      "{name} made a bold move, acquiring {quantity} {commodity}. Their strategy remains unclear to observers.",
+      "Dock workers report {name} loading {quantity} units of {commodity}. 'They seemed very pleased with themselves.'"
+    ],
+    "major_sell": [
+      "{name} unloaded {quantity} {commodity} at {planet} for a tidy profit.",
+      "TRADE COMPLETE: {name} sold their entire {commodity} stockpile. Market analysts are baffled.",
+      "{name} cashed out {quantity} {commodity}. Sources say they 'looked smug about it.'",
+      "Breaking: {name} dumps {quantity} {commodity} on the market. Prices expected to shift."
+    ],
+    "travel": [
+      "{name} was seen departing for {destination}. They left in quite a hurry.",
+      "Ship registries show {name} en route to {destination}.",
+      "{name} has set course for {destination}. Travel time estimated at {days} days."
+    ],
+    "event_loss": [
+      "BREAKING: {name}'s cargo raided by pirates near {location}! Lost {quantity} units of {commodity}. They're reportedly 'not worried about it.'",
+      "Disaster strikes! {name} lost {quantity} {commodity} to an asteroid collision.",
+      "{name} suffered losses during transit. {quantity} {commodity} destroyed in the incident."
+    ],
+    "bankruptcy": [
+      "BREAKING: {name}'s trading empire collapses! Last seen selling their ship for 'one last big score.' It did not work out.",
+      "END OF AN ERA: {name} has declared bankruptcy. Their final transmission was just nervous laughter.",
+      "{name} is officially out of the game. Market analysts predict 'literally no impact whatsoever.'"
+    ],
+    "near_bankruptcy": [
+      "{name} is reportedly 'having some cash flow issues.' Translation: they're broke.",
+      "Sources close to {name} suggest they may be 'reconsidering their life choices.'",
+      "RUMOR: {name} spotted trying to sell their ship's spare parts. Things are not going well."
+    ]
+  }
+}

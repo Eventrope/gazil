@@ -6,13 +6,18 @@ extends Control
 @onready var day_label: Label = $MarginContainer/VBoxContainer/HUD/DayLabel
 @onready var location_label: Label = $MarginContainer/VBoxContainer/HUD/LocationLabel
 
+# Competition mode UI
+var leaderboard_panel: LeaderboardPanel = null
+var bot_news_popup: BotNewsPopup = null
+var pending_event = null  # Store event to show after news popup
+
 @onready var planet_list: ItemList = $MarginContainer/VBoxContainer/MainContent/LeftPanel/PlanetList
 @onready var planet_name: Label = $MarginContainer/VBoxContainer/MainContent/RightPanel/PlanetName
 @onready var planet_description: Label = $MarginContainer/VBoxContainer/MainContent/RightPanel/PlanetDescription
 @onready var distance_label: Label = $MarginContainer/VBoxContainer/MainContent/RightPanel/TravelInfo/DistanceLabel
 @onready var fuel_cost_label: Label = $MarginContainer/VBoxContainer/MainContent/RightPanel/TravelInfo/FuelCostLabel
 @onready var travel_time_label: Label = $MarginContainer/VBoxContainer/MainContent/RightPanel/TravelInfo/TravelTimeLabel
-@onready var travel_button: Button = $MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonRow/TravelButton
+@onready var travel_button: Button = $MarginContainer/VBoxContainer/MainContent/RightPanel/ButtonContainer/ButtonRow1/TravelButton
 @onready var message_label: Label = $MarginContainer/VBoxContainer/MessageLabel
 
 var selected_planet_id: String = ""
@@ -22,6 +27,7 @@ func _ready() -> void:
 	_populate_planet_list()
 	_update_hud()
 	_clear_selection()
+	_setup_competition_ui()
 
 func _populate_planet_list() -> void:
 	planet_list.clear()
@@ -82,7 +88,17 @@ func _update_hud() -> void:
 	credits_label.text = "Credits: %s" % _format_number(player.credits)
 	fuel_label.text = "Fuel: %d/%d" % [player.fuel, player.ship.fuel_tank]
 	cargo_label.text = "Cargo: %d/%d t" % [player.get_cargo_space_used(), player.ship.cargo_tonnes]
-	day_label.text = "Day: %d" % player.day
+
+	# Show days remaining in competition mode
+	if GameState.competition_mode:
+		var days_remaining := GameState.game_length - player.day
+		if days_remaining > 0:
+			day_label.text = "Day: %d / %d (%d remaining)" % [player.day, GameState.game_length, days_remaining]
+		else:
+			day_label.text = "Day: %d / %d (FINAL)" % [player.day, GameState.game_length]
+	else:
+		day_label.text = "Day: %d" % player.day
+
 	location_label.text = "Location: %s" % current.planet_name
 
 func _format_number(num: int) -> String:
@@ -104,6 +120,30 @@ func _clear_selection() -> void:
 	fuel_cost_label.text = "Fuel Cost: --"
 	travel_time_label.text = "Travel Time: -- days"
 	travel_button.disabled = true
+
+func _setup_competition_ui() -> void:
+	if not GameState.competition_mode:
+		return
+
+	# Add leaderboard panel
+	var leaderboard_scene := preload("res://scenes/leaderboard_panel.tscn")
+	leaderboard_panel = leaderboard_scene.instantiate()
+	# Position in top-right corner
+	leaderboard_panel.anchor_left = 1.0
+	leaderboard_panel.anchor_right = 1.0
+	leaderboard_panel.anchor_top = 0.0
+	leaderboard_panel.anchor_bottom = 0.0
+	leaderboard_panel.offset_left = -260
+	leaderboard_panel.offset_right = -10
+	leaderboard_panel.offset_top = 10
+	leaderboard_panel.offset_bottom = 300
+	add_child(leaderboard_panel)
+
+	# Add bot news popup (hidden by default)
+	var news_scene := preload("res://scenes/bot_news_popup.tscn")
+	bot_news_popup = news_scene.instantiate()
+	bot_news_popup.closed.connect(_on_bot_news_closed)
+	add_child(bot_news_popup)
 
 func _on_planet_selected(index: int) -> void:
 	if index < 0 or index >= planet_ids.size():
@@ -174,6 +214,13 @@ func _on_travel_pressed() -> void:
 	if result["success"]:
 		_show_message(result["message"], Color(0.4, 0.8, 0.4))
 
+		# In competition mode, show bot news first
+		if GameState.competition_mode and bot_news_popup:
+			var bot_actions: Array = result.get("bot_actions", [])
+			pending_event = result["event"]  # Store event to show after news
+			bot_news_popup.show_news(bot_actions)
+			return
+
 		# Check for event
 		if result["event"] != null:
 			get_tree().change_scene_to_file("res://scenes/travel_event.tscn")
@@ -192,11 +239,48 @@ func _on_travel_pressed() -> void:
 	else:
 		_show_message(result["message"], Color(0.9, 0.3, 0.3))
 
+func _on_bot_news_closed() -> void:
+	# Show travel event if there was one
+	if pending_event != null:
+		pending_event = null
+		get_tree().change_scene_to_file("res://scenes/travel_event.tscn")
+		return
+
+	# Check game over conditions
+	var game_over := GameState.check_game_over()
+	if game_over["game_over"]:
+		get_tree().change_scene_to_file("res://scenes/game_over.tscn")
+		return
+
+	# Refresh UI
+	_populate_planet_list()
+	_update_hud()
+	_clear_selection()
+
+	if leaderboard_panel:
+		leaderboard_panel.refresh()
+
 func _on_market_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/market.tscn")
 
 func _on_shipyard_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/shipyard.tscn")
+
+func _on_bank_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/bank.tscn")
+
+func _on_passengers_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/passenger_lounge.tscn")
+
+func _on_invest_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/investment_office.tscn")
+
+func _on_crew_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/crew_quarters.tscn")
+
+func _on_main_menu_pressed() -> void:
+	GameState.return_to_main_menu()
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 func _on_news_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/galactic_news.tscn")

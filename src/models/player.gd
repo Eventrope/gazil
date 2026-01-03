@@ -9,10 +9,27 @@ var fuel: int
 var day: int
 var statistics: Dictionary
 
+# Banking System
+var bank_balance: int = 0
+var loans: Array = []  # [{principal: int, interest_rate: float, due_day: int, amount_owed: int}]
+var credit_rating: int = 100  # 0-200, 100 = average
+
+# Passenger System
+var accepted_passengers: Array = []  # Array of PassengerContract
+var passenger_reputation: int = 50  # 0-100, affects contract availability
+
+# Investment System
+var investments: Array = []  # Array of Investment objects
+
+# Crew System
+var crew: Array = []  # Array of CrewMember objects
+
 signal credits_changed(new_amount: int)
 signal fuel_changed(new_amount: int)
 signal cargo_changed()
 signal location_changed(new_planet: String)
+signal bank_balance_changed(new_amount: int)
+signal reputation_changed(new_amount: int)
 
 func _init() -> void:
 	credits = 1000
@@ -113,9 +130,150 @@ func is_stranded() -> bool:
 	return fuel <= 0
 
 func has_won() -> bool:
-	return credits >= 100000
+	# Include bank balance in net worth calculation
+	return get_net_worth() >= 100000
+
+func get_net_worth() -> int:
+	var total := credits + bank_balance
+	for loan in loans:
+		total -= loan.get("amount_owed", 0)
+	return total
+
+# --- Banking Methods ---
+
+func deposit_to_bank(amount: int) -> bool:
+	if credits < amount:
+		return false
+	credits -= amount
+	bank_balance += amount
+	credits_changed.emit(credits)
+	bank_balance_changed.emit(bank_balance)
+	return true
+
+func withdraw_from_bank(amount: int) -> bool:
+	if bank_balance < amount:
+		return false
+	bank_balance -= amount
+	credits += amount
+	credits_changed.emit(credits)
+	bank_balance_changed.emit(bank_balance)
+	return true
+
+func take_loan(principal: int, interest_rate: float, duration_days: int) -> bool:
+	if loans.size() >= 3:  # Max 3 concurrent loans
+		return false
+	var loan := {
+		"principal": principal,
+		"interest_rate": interest_rate,
+		"due_day": day + duration_days,
+		"amount_owed": principal
+	}
+	loans.append(loan)
+	credits += principal
+	credits_changed.emit(credits)
+	return true
+
+func repay_loan(loan_index: int, amount: int) -> Dictionary:
+	if loan_index < 0 or loan_index >= loans.size():
+		return {"success": false, "message": "Invalid loan"}
+	if credits < amount:
+		return {"success": false, "message": "Not enough credits"}
+
+	var loan: Dictionary = loans[loan_index]
+	var owed: int = loan.get("amount_owed", 0)
+	var payment := mini(amount, owed)
+
+	credits -= payment
+	loan["amount_owed"] = owed - payment
+	credits_changed.emit(credits)
+
+	if loan["amount_owed"] <= 0:
+		loans.remove_at(loan_index)
+		# Improve credit rating for paying off loan
+		var due_day: int = loan.get("due_day", day)
+		var on_time: bool = day <= due_day
+		if on_time:
+			credit_rating = mini(200, credit_rating + 5)
+		return {"success": true, "message": "Loan paid off!", "paid_off": true, "on_time": on_time}
+
+	return {"success": true, "message": "Paid %d towards loan" % payment, "paid_off": false}
+
+func get_max_loan_amount() -> int:
+	# Credit rating 100 = 10,000 max, scales with rating
+	return 5000 + (credit_rating * 50)
+
+func get_loan_interest_rate() -> float:
+	# Base 1%, modified by credit rating (lower rating = higher rate)
+	return 0.01 * (200.0 - credit_rating) / 100.0
+
+func get_total_debt() -> int:
+	var total := 0
+	for loan in loans:
+		total += loan.get("amount_owed", 0)
+	return total
+
+func has_overdue_loans() -> bool:
+	for loan in loans:
+		if day > loan.get("due_day", 0):
+			return true
+	return false
+
+# --- Passenger Methods ---
+
+func get_passenger_count() -> int:
+	var count := 0
+	for contract in accepted_passengers:
+		count += contract.count if contract.has("count") else 1
+	return count
+
+func get_passenger_berths_free() -> int:
+	if ship == null:
+		return 0
+	return ship.passenger_berths - get_passenger_count()
+
+func change_reputation(amount: int) -> void:
+	passenger_reputation = clampi(passenger_reputation + amount, 0, 100)
+	reputation_changed.emit(passenger_reputation)
+
+# --- Crew Methods ---
+
+func get_crew_count() -> int:
+	return crew.size()
+
+func get_daily_wages() -> int:
+	var total := 0
+	for member in crew:
+		if member.has_method("get_daily_wage"):
+			total += member.get_daily_wage()
+		else:
+			total += member.get("wage", 20)
+	return total
 
 func to_dict() -> Dictionary:
+	# Serialize passengers
+	var passengers_data: Array = []
+	for contract in accepted_passengers:
+		if contract.has_method("to_dict"):
+			passengers_data.append(contract.to_dict())
+		elif contract is Dictionary:
+			passengers_data.append(contract)
+
+	# Serialize investments
+	var investments_data: Array = []
+	for inv in investments:
+		if inv.has_method("to_dict"):
+			investments_data.append(inv.to_dict())
+		elif inv is Dictionary:
+			investments_data.append(inv)
+
+	# Serialize crew
+	var crew_data: Array = []
+	for member in crew:
+		if member.has_method("to_dict"):
+			crew_data.append(member.to_dict())
+		elif member is Dictionary:
+			crew_data.append(member)
+
 	return {
 		"credits": credits,
 		"current_planet": current_planet,
@@ -123,7 +281,18 @@ func to_dict() -> Dictionary:
 		"cargo": cargo.duplicate(),
 		"fuel": fuel,
 		"day": day,
-		"statistics": statistics.duplicate()
+		"statistics": statistics.duplicate(),
+		# Banking
+		"bank_balance": bank_balance,
+		"loans": loans.duplicate(true),
+		"credit_rating": credit_rating,
+		# Passengers
+		"accepted_passengers": passengers_data,
+		"passenger_reputation": passenger_reputation,
+		# Investments
+		"investments": investments_data,
+		# Crew
+		"crew": crew_data
 	}
 
 static func from_dict(data: Dictionary) -> Player:
@@ -136,4 +305,20 @@ static func from_dict(data: Dictionary) -> Player:
 	player.statistics = data.get("statistics", player.statistics)
 	if data.has("ship") and not data["ship"].is_empty():
 		player.ship = Ship.from_dict(data["ship"])
+
+	# Banking (v4+)
+	player.bank_balance = data.get("bank_balance", 0)
+	player.loans = data.get("loans", [])
+	player.credit_rating = data.get("credit_rating", 100)
+
+	# Passengers (v4+)
+	player.accepted_passengers = data.get("accepted_passengers", [])
+	player.passenger_reputation = data.get("passenger_reputation", 50)
+
+	# Investments (v4+)
+	player.investments = data.get("investments", [])
+
+	# Crew (v4+)
+	player.crew = data.get("crew", [])
+
 	return player

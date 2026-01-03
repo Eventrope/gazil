@@ -1,0 +1,59 @@
+{
+  "passenger_types": [
+    {
+      "id": "tourist",
+      "name": "Tourist",
+      "description": "Vacationers exploring the galaxy",
+      "base_payment": 100,
+      "patience": 3,
+      "tip_chance": 0.3,
+      "tip_multiplier": 1.2,
+      "mood_decay": 5,
+      "min_reputation": 0
+    },
+    {
+      "id": "businessman",
+      "name": "Business Traveler",
+      "description": "Corporate executives on tight schedules",
+      "base_payment": 200,
+      "patience": 1,
+      "tip_chance": 0.2,
+      "tip_multiplier": 1.5,
+      "mood_decay": 15,
+      "min_reputation": 20
+    },
+    {
+      "id": "colonist",
+      "name": "Colonist",
+      "description": "Settlers moving to new worlds",
+      "base_payment": 50,
+      "patience": 7,
+      "tip_chance": 0.1,
+      "tip_multiplier": 1.1,
+      "mood_decay": 2,
+      "min_reputation": 0
+    },
+    {
+      "id": "scientist",
+      "name": "Scientist",
+      "description": "Researchers traveling for fieldwork",
+      "base_payment": 150,
+      "patience": 4,
+      "tip_chance": 0.15,
+      "tip_multiplier": 1.3,
+      "mood_decay": 8,
+      "min_reputation": 30
+    },
+    {
+      "id": "vip",
+      "name": "VIP",
+      "description": "High-profile passengers demanding luxury",
+      "base_payment": 500,
+      "patience": 2,
+      "tip_chance": 0.4,
+      "tip_multiplier": 2.0,
+      "mood_decay": 20,
+      "min_reputation": 60
+    }
+  ]
+}

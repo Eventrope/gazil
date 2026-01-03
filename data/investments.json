@@ -1,0 +1,64 @@
+{
+  "investment_types": [
+    {
+      "id": "savings_bond",
+      "name": "Galactic Savings Bond",
+      "description": "Safe government bonds with guaranteed returns",
+      "category": "bonds",
+      "min_investment": 500,
+      "max_investment": 50000,
+      "duration_days": 30,
+      "base_return": 0.05,
+      "risk": 0.0,
+      "volatility": 0.0
+    },
+    {
+      "id": "planet_development",
+      "name": "Planet Development Fund",
+      "description": "Invest in planetary infrastructure projects",
+      "category": "bonds",
+      "min_investment": 1000,
+      "max_investment": 25000,
+      "duration_days": 45,
+      "base_return": 0.12,
+      "risk": 0.1,
+      "volatility": 0.05
+    },
+    {
+      "id": "commodity_futures",
+      "name": "Commodity Futures",
+      "description": "Speculate on future commodity prices",
+      "category": "futures",
+      "min_investment": 200,
+      "max_investment": 10000,
+      "duration_days": 14,
+      "base_return": 0.20,
+      "risk": 0.35,
+      "volatility": 0.25
+    },
+    {
+      "id": "mining_venture",
+      "name": "Asteroid Mining Venture",
+      "description": "High-risk mining operation with potential big returns",
+      "category": "venture",
+      "min_investment": 2000,
+      "max_investment": 20000,
+      "duration_days": 60,
+      "base_return": 0.50,
+      "risk": 0.5,
+      "volatility": 0.4
+    },
+    {
+      "id": "tech_startup",
+      "name": "Tech Startup Fund",
+      "description": "Invest in emerging space technology companies",
+      "category": "venture",
+      "min_investment": 1500,
+      "max_investment": 15000,
+      "duration_days": 90,
+      "base_return": 0.75,
+      "risk": 0.6,
+      "volatility": 0.5
+    }
+  ]
+}
